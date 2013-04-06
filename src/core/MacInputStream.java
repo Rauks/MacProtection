@@ -111,6 +111,7 @@ public class MacInputStream extends FilterInputStream{
      * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the MAC hash value. 
      * 
      * @return the number of bytes readed.
+     * @see java.io.MacInputStream#read()
      */
     public int readAll() {
         int read = 0;
@@ -144,7 +145,7 @@ public class MacInputStream extends FilterInputStream{
      * @param len the maximum number of bytes to read.
      * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
      * @throws IOException if an I/O error occurs.
-     * @see java.io.InputStream#read()
+     * @see java.io.MacInputStream#read()
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -174,5 +175,31 @@ public class MacInputStream extends FilterInputStream{
             this.mac.update((byte) readed);
         }
         return readed;
+    }
+    
+    /**
+     * Reads some number of bytes from the input stream and stores them into
+     * the buffer array <code>b</code>. The number of bytes actually read is
+     * returned as an integer.  This method blocks until input data is
+     * available, end of file is detected, or an exception is thrown.
+     *
+     * <p> If the length of <code>b</code> is zero, then no bytes are read and
+     * <code>0</code> is returned; otherwise, there is an attempt to read at
+     * least one byte. If no byte is available because the stream is at the
+     * end of the file, the value <code>-1</code> is returned; otherwise, at
+     * least one byte is read and stored into <code>b</code>.
+     * <p>
+     * The MAC hash is updated.
+     * <p>
+     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * 
+     * @param b the buffer into which the data is read.
+     * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.MacInputStream#read()
+     */
+    @Override
+    public int read(byte b[]) throws IOException {
+        return read(b, 0, b.length);
     }
 }
