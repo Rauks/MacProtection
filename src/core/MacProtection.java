@@ -29,7 +29,7 @@ public class MacProtection {
         String key = "testKey";
         
         try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), key.getBytes())){
-            mis.read();
+            mis.readAll();
             System.out.println(mis.getMacString());
             System.out.println("");
         } catch (IOException ex) {
@@ -41,7 +41,7 @@ public class MacProtection {
             File f = it.next();
             System.out.println(f);
             try(MacInputStream mis = new MacInputStream(new FileInputStream(f), key.getBytes())){
-                mis.read();
+                mis.readAll();
                 System.out.println(mis.getMacString());
                 System.out.println("");
             } catch (IOException ex) {
