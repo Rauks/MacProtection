@@ -107,14 +107,13 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Read the {@link InputStream} and calculate the MAC hash.
+     * Read all the datas of the {@link InputStream} and calculate the MAC hash.
      * <p>
      * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the MAC hash value. 
      * 
      * @return the number of bytes readed.
      */
-    @Override
-    public int read() {
+    public int readAll() {
         int read = 0;
         try {
             byte[] buffer = new byte[1024];
@@ -128,5 +127,53 @@ public class MacInputStream extends FilterInputStream{
             Logger.getLogger(MacInputStream.class.getName()).log(Level.SEVERE, null, ex);
         }
         return read;
+    }
+    
+    /**
+     * Reads up to <code>len</code> bytes of data from the input stream into an array of bytes.
+     * An attempt is made to read as many as <code>len</code> bytes, but a smaller number may be read.
+     * The number of bytes actually read is returned as an integer.
+     * <p>
+     * This method blocks until input data is available, end of file is detected, or an exception is thrown.
+     * <p>
+     * The MAC hash is updated.
+     * <p>
+     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * 
+     * @param b the buffer into which the data is read.
+     * @param off the start offset in array <code>b</code> at which the data is written.
+     * @param len the maximum number of bytes to read.
+     * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     * @see java.io.InputStream#read()
+     */
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int readed = in.read(b, off, len);
+        if (readed != -1) {
+            mac.update(b, off, readed);
+        }
+        return readed;
+    }
+    
+    /**
+     * Reads the next byte of data from the input stream. The value byte is
+     * returned as an <code>int</code> in the range <code>0</code> to
+     * <code>255</code>.
+     * <p>
+     * The MAC hash is updated.
+     * <p>
+     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * 
+     * @return the next byte of data, or -1 if the end of the stream is reached.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public int read() throws IOException {
+        int readed = in.read();
+        if (readed != -1) {
+            mac.update((byte) readed);
+        }
+        return readed;
     }
 }
