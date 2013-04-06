@@ -4,16 +4,49 @@
  */
 package core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+
 /**
  *
  * @author Karl
  */
 public class MacProtection {
-
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        File dirToScan = new File(".");
+        String key = "testKey";
+        
+        try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), key.getBytes())){
+            mis.read();
+            System.out.println(mis.getMacString());
+            System.out.println("");
+        } catch (IOException ex) {
+            Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Collection<File> files = FileUtils.listFiles(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY);
+        for(Iterator<File> it = files.iterator(); it.hasNext();){
+            File f = it.next();
+            System.out.println(f);
+            try(MacInputStream mis = new MacInputStream(new FileInputStream(f), key.getBytes())){
+                mis.read();
+                System.out.println(mis.getMacString());
+                System.out.println("");
+            } catch (IOException ex) {
+                Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }
