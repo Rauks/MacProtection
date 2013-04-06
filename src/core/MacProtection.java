@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -27,12 +28,13 @@ public class MacProtection {
     public static void main(String[] args) {
         File dirToScan = new File(".");
         String key = "testKey";
+        String algorithm = "HmacSHA256";
         
-        try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), key.getBytes())){
+        try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), algorithm, key.getBytes())){
             mis.readAll();
             System.out.println(mis.getMacString());
             System.out.println("");
-        } catch (IOException ex) {
+        } catch (IOException | NoSuchAlgorithmException ex) {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -40,11 +42,11 @@ public class MacProtection {
         for(Iterator<File> it = files.iterator(); it.hasNext();){
             File f = it.next();
             System.out.println(f);
-            try(MacInputStream mis = new MacInputStream(new FileInputStream(f), key.getBytes())){
+            try(MacInputStream mis = new MacInputStream(new FileInputStream(f), algorithm, key.getBytes())){
                 mis.readAll();
                 System.out.println(mis.getMacString());
                 System.out.println("");
-            } catch (IOException ex) {
+            } catch (IOException | NoSuchAlgorithmException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

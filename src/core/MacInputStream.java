@@ -23,25 +23,24 @@ import org.apache.commons.codec.binary.Base64;
 public class MacInputStream extends FilterInputStream{
     private Mac mac;
     private Mac macMarkClone;
-    
+
     /**
      * Create a new MacInputStream from an {@link InputStream}. The seed is using to initialize the secret key.
-     * <p>
-     * The MAC hash algorithm used is <code>HmacSHA256</code>.
      * 
      * @param is the input stream.
+     * @param algorithm the standard name of the requested MAC algorithm.
      * @param seed the seed for the secret key.
-     * @see java.io.FilterInputStream#in
+     * @throws NoSuchAlgorithmException if no Provider supports a MacSpi implementation for the specified algorithm.
      * @see javax.crypto.spec.SecretKeySpec
      * @see javax.crypto.Mac
      */
-    public MacInputStream(InputStream is, byte[] seed){
+    public MacInputStream(InputStream is, String algorithm, byte[] seed) throws NoSuchAlgorithmException{
         super(is);
         try {
             this.mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec ks = new SecretKeySpec(seed, "HmacSHA256");
             this.mac.init(ks);
-        } catch (InvalidKeyException | NoSuchAlgorithmException ex) {
+        } catch (InvalidKeyException ex) {
             Logger.getLogger(MacInputStream.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
