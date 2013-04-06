@@ -40,7 +40,7 @@ public class MacInputStream extends FilterInputStream{
         try {
             this.mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec ks = new SecretKeySpec(seed, "HmacSHA256");
-            mac.init(ks);
+            this.mac.init(ks);
         } catch (InvalidKeyException | NoSuchAlgorithmException ex) {
             Logger.getLogger(MacInputStream.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,7 +121,7 @@ public class MacInputStream extends FilterInputStream{
             int nl;
             while((nl = bin.read()) != -1){
                 read += nl;
-                mac.update(buffer, 0, nl);
+                this.mac.update(buffer, 0, nl);;
             }
         } catch (IOException ex) {
             Logger.getLogger(MacInputStream.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,9 +149,9 @@ public class MacInputStream extends FilterInputStream{
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int readed = in.read(b, off, len);
+        int readed = this.in.read(b, off, len);
         if (readed != -1) {
-            mac.update(b, off, readed);
+            this.mac.update(b, off, readed);
         }
         return readed;
     }
@@ -170,9 +170,9 @@ public class MacInputStream extends FilterInputStream{
      */
     @Override
     public int read() throws IOException {
-        int readed = in.read();
+        int readed = this.in.read();
         if (readed != -1) {
-            mac.update((byte) readed);
+            this.mac.update((byte) readed);
         }
         return readed;
     }
