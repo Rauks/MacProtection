@@ -224,7 +224,7 @@ public class MacInputStream extends FilterInputStream{
      * @see java.io.MacInputStream#read()
      */
     @Override
-    public int read(byte b[]) throws IOException {
+    public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 }
