@@ -28,7 +28,7 @@ public class MacProtection {
     public static void main(String[] args) {
         File dirToScan = new File(".");
         String key = "testKey";
-        String algorithm = "HmacSHA256";
+        MacAlgorithm algorithm = MacAlgorithm.HmacSHA512;
         
         try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), algorithm, key.getBytes())){
             mis.readAll();

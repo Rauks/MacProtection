@@ -34,11 +34,11 @@ public class MacInputStream extends FilterInputStream{
      * @see javax.crypto.spec.SecretKeySpec
      * @see javax.crypto.Mac
      */
-    public MacInputStream(InputStream is, String algorithm, byte[] seed) throws NoSuchAlgorithmException{
+    public MacInputStream(InputStream is, MacAlgorithm algorithm, byte[] seed) throws NoSuchAlgorithmException{
         super(is);
         try {
-            this.mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec ks = new SecretKeySpec(seed, "HmacSHA256");
+            this.mac = Mac.getInstance(algorithm.toString());
+            SecretKeySpec ks = new SecretKeySpec(seed, algorithm.toString());
             this.mac.init(ks);
         } catch (InvalidKeyException ex) {
             Logger.getLogger(MacInputStream.class.getName()).log(Level.SEVERE, null, ex);
