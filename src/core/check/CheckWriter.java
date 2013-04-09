@@ -5,15 +5,10 @@
 package core.check;
 
 import core.MacAlgorithm;
-import core.MacInputStream;
 import core.tree.Folder;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
@@ -25,11 +20,9 @@ import java.util.zip.GZIPOutputStream;
  * 
  * @author Karl
  */
-public class CheckWriter {
+public class CheckWriter extends CheckMac{
     private OutputStream out;
     private Folder folder;
-    private MacAlgorithm algorithm;
-    private String key;
     
     /**
      * Create a <code>CheckWriter</code> who write a check file for a <code>folder</code> into the {@link OutputStream} <code>out</code>.
@@ -38,10 +31,9 @@ public class CheckWriter {
      * @param folder the folder.
      */
     public CheckWriter(OutputStream out, Folder folder, MacAlgorithm algorithm, String key){
-        this.out = out;
+        super(algorithm, key);
         this.folder = folder;
-        this.algorithm = algorithm;
-        this.key = key;
+        this.out = out;
     }
     
     /**
@@ -53,36 +45,13 @@ public class CheckWriter {
      */
     public void write(){
         try(ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(this.out))){
-                oos.write(this.getCheckMac());
+                byte[] hash = this.getCheckMac(this.folder);
+                oos.write(hash.length);
+                oos.write(hash);
                 oos.writeObject(this.folder);
                 oos.flush();
         } catch (IOException ex) {
             Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    /**
-     * Get the Mac hash used to protect the check file.
-     * 
-     * @return the Mac hash.
-     * @see javax.crypto.Mac
-     */
-    private byte[] getCheckMac(){
-        try {
-            File temp = File.createTempFile("mac", null);
-            temp.deleteOnExit();
-            try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(temp))){
-                oos.writeObject(this.folder);
-                oos.flush();
-            }
-            try(MacInputStream mis = new MacInputStream(new FileInputStream(temp), this.algorithm, this.key.getBytes())){
-                return mis.getMacBytes();
-            } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
     }
 }
