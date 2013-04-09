@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -20,7 +21,10 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 /**
- *
+ * Build the {@link Folder} tree of a real folder.
+ * <p>
+ * To build the tree use {@link MacProcessor#process} and to get que result tree use {@link MacProcessor#getResult}.
+ * 
  * @author Karl
  */
 public class MacProcessor {
@@ -62,13 +66,12 @@ public class MacProcessor {
      */
     private Folder initFolder(File dir){
         Folder f = new Folder(dir.getName());
-        Collection<File> files = FileUtils.listFilesAndDirs(dir, new RegexFileFilter("^(.*?)"), null);
-        for(Iterator<File> it = files.iterator(); it.hasNext();){
-            File file = it.next();
+        for(File file : dir.listFiles()){
+            System.out.println(file);
             if(file.isFile()){
                 try(MacInputStream mis = new MacInputStream(new FileInputStream(file), algorithm, key.getBytes())){
                     mis.readAll();
-                    switch(macOutput){
+                    switch(this.macOutput){
                         case BASE64:
                             f.addFile(file.getName(), mis.getMacBase64());
                             break;
@@ -107,16 +110,32 @@ public class MacProcessor {
     }
     
     /**
-     * Return the files paths and the Mac hash calculated for the file.
+     * Return the files and the folders of the builded result {@link Folder} or <code>NOT PROCESSED</code> if the root is not builded.
      * 
-     * @return 
+     * @return the builded result {@link Folder} content.
      */
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(Iterator<Entry<String, String>> it = this.macMap.entrySet().iterator(); it.hasNext();){
-            Entry e = it.next();
-            sb.append(e.getKey()).append('\n').append(e.getValue()).append('\n').append('\n');
+        if(this.root != null){
+            sb.append("FOLDERS:").append('\n');
+            HashSet<Folder> folders;
+            if((folders = this.root.getAllSubFolders()) != null){
+                for(Iterator<Folder> it = folders.iterator(); it.hasNext();){
+                    sb.append(it.next().getName()).append('\n');
+                }
+            }
+            sb.append('\n').append("FILES:").append('\n');
+            HashMap<String, String> files;
+            if((files = this.root.getAllFiles()) != null){
+                for(Iterator<Entry<String, String>> it = files.entrySet().iterator(); it.hasNext();){
+                    Entry e = it.next();
+                    sb.append("{").append(e.getValue()).append("} ").append(e.getKey()).append('\n');
+                }   
+            }
+        }
+        else{
+            sb.append("NOT PROCESSED");
         }
         return sb.toString();
     }

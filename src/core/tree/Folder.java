@@ -12,7 +12,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- *
+ * Used to represent a folder and files structure. The folders can have sub-folders and files.
+ * Each file is represented by his <code>name</code> and his <code>hash</code> and each folder by his <code>name</code>.
+ * <p>
+ * The conformity of a folder relative to another folder reference can be checked with {@link Folder#isConformTo}.
+ * 
  * @author Karl
  */
 public class Folder {
@@ -28,6 +32,8 @@ public class Folder {
      */
     public Folder(String name){
         this.name = name;
+        this.folders = new HashSet<>();
+        this.files = new HashMap<>();
     }
     
     /**

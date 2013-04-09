@@ -17,7 +17,12 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- *
+ * A <code>MacInputStream</code> contains some other input stream, which it uses as its basic source of data.
+ * A Mac hash is calculated during the input stream reading and can be retrieved with {@link MacInputStream#getMacBytes}, {@link MacInputStream#getMacHex} or {@link MacInputStream#getMacBase64}.
+ * 
+ * @see javax.crypto.Mac
+ * @see java.io.InputStream
+ * 
  * @author Karl
  */
 public class MacInputStream extends FilterInputStream{
@@ -50,6 +55,7 @@ public class MacInputStream extends FilterInputStream{
      * 
      * @return the MAC hash.
      * @see javax.crypto.Mac
+     * @see java.io.InputStream
      */
     public byte[] getMacBytes(){
         return this.mac.doFinal();
