@@ -85,7 +85,7 @@ public class MacProcessor {
     }
     
     /**
-     * Construct the {@link Folder} tree that is retrievable with {@link MacProcessor#getResult}.
+     * Construct a {@link Folder} tree that is retrievable with {@link MacProcessor#getResult}.
      * 
      * @warning The process may take some time.
      */
