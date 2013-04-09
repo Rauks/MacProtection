@@ -62,7 +62,7 @@ public class Folder {
     /**
      * Get the files of this folder with their hash.
      * 
-     * @warning return only the files of the folder, to get the files of the sub-folders recurcively see {@link Folder#getAllFiles()}.
+     * @warning return only the files of the folder, to get the files of the sub-folders recurcively see {@link Folder#getAllFiles}.
      * @return the files.
      */
     public HashMap<String, String> getFiles(){
@@ -72,7 +72,7 @@ public class Folder {
     /**
      * Get the files of this folder with their hash recurcively.
      * 
-     * @warning return all the files recurcively, to get only the files of the folder and not of the sub-folders see {@link Folder#getFiles()}.
+     * @warning return all the files recurcively, to get only the files of the folder and not of the sub-folders see {@link Folder#getFiles}.
      * @return the files.
      */
     public HashMap<String, String> getAllFiles(){
@@ -112,7 +112,7 @@ public class Folder {
     /**
      * Get the direct sub-folders of this folder.
      * 
-     * @warning only the direct sub-folders are returned, to get the sub-folders recurcively see {@link Folder#getAllFolders()}.
+     * @warning only the direct sub-folders are returned, to get the sub-folders recurcively see {@link Folder#getAllFolders}.
      * @return the sub-folders.
      */
     public HashSet<Folder> getSubFolders(){
@@ -122,7 +122,7 @@ public class Folder {
     /**
      * Get all the sub-folders of this folder recurcively.
      * 
-     * @warning return all the sub-folders recurcively, to get only the direct sub-folders see {@link Folder#getFolders()}.
+     * @warning return all the sub-folders recurcively, to get only the direct sub-folders see {@link Folder#getFolders}.
      * @return the sub-folders.
      */
     public HashSet<Folder> getAllSubFolders(){
