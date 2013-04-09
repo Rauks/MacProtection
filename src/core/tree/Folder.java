@@ -4,6 +4,7 @@
  */
 package core.tree;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,7 +18,9 @@ import java.util.Map.Entry;
  * 
  * @author Karl
  */
-public class Folder {
+public class Folder implements Serializable{
+    private static final long serialVersionUID = 1L;
+    
     private HashSet<Folder> folders;
     private HashMap<String, String> files;
     
