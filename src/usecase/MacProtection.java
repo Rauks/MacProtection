@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package core;
+package usecase;
 
+import core.MacAlgorithm;
+import core.MacProcessor;
+import core.tree.Folder;
 import java.io.File;
 import java.util.Collection;
 import org.apache.commons.io.FileUtils;
@@ -25,6 +28,8 @@ public class MacProtection {
         
         MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.HEXADECIMAL);
         p.process();
-        System.out.println(p.toString());
+        Folder root = p.getResult();
+        
+        System.out.println(root);
     }
 }

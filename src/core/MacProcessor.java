@@ -4,6 +4,7 @@
  */
 package core;
 
+import usecase.MacProtection;
 import core.tree.Folder;
 import java.io.File;
 import java.io.FileInputStream;
@@ -107,36 +108,5 @@ public class MacProcessor {
      */
     public Folder getResult(){
         return this.root;
-    }
-    
-    /**
-     * Return the files and the folders of the builded result {@link Folder} or <code>NOT PROCESSED</code> if the root is not builded.
-     * 
-     * @return the builded result {@link Folder} content.
-     */
-    @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        if(this.root != null){
-            sb.append("FOLDERS:").append('\n');
-            HashSet<Folder> folders;
-            if((folders = this.root.getAllSubFolders()) != null){
-                for(Iterator<Folder> it = folders.iterator(); it.hasNext();){
-                    sb.append(it.next().getName()).append('\n');
-                }
-            }
-            sb.append('\n').append("FILES:").append('\n');
-            HashMap<String, String> files;
-            if((files = this.root.getAllFiles()) != null){
-                for(Iterator<Entry<String, String>> it = files.entrySet().iterator(); it.hasNext();){
-                    Entry e = it.next();
-                    sb.append("{").append(e.getValue()).append("} ").append(e.getKey()).append('\n');
-                }   
-            }
-        }
-        else{
-            sb.append("NOT PROCESSED");
-        }
-        return sb.toString();
     }
 }

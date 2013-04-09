@@ -141,7 +141,9 @@ public class Folder {
     }
     
     /**
-     * Check of the folder is conform to <code>other<code> folder. To be conform the folder structure must be the same between the current folder and <code>other</code>, the contained files must have the same <code>names</code> and <code>hash</code>.
+     * Check of the folder is conform to <code>other<code> folder. 
+     * To be conform the folder structure must be the same between the current folder and <code>other</code>, 
+     * the contained files must have the same <code>names</code> and <code>hash</code>.
      * 
      * @param other the folder used to validate the current folder.
      * @return <code>true</code> if the current folder is conform.
@@ -177,5 +179,31 @@ public class Folder {
             }
         }
         return true;
+    }
+    
+    /**
+     * Return all the files and the sub-folders of this folder.
+     * 
+     * @return all the files and the sub-folders view.
+     */
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("FOLDERS:").append('\n');
+        HashSet<Folder> allFolders;
+        if((allFolders = this.getAllSubFolders()) != null){
+            for(Iterator<Folder> it = allFolders.iterator(); it.hasNext();){
+                sb.append(it.next().getName()).append('\n');
+            }
+        }
+        sb.append('\n').append("FILES:").append('\n');
+        HashMap<String, String> allFiles;
+        if((allFiles = this.getAllFiles()) != null){
+            for(Iterator<Entry<String, String>> it = allFiles.entrySet().iterator(); it.hasNext();){
+                Entry e = it.next();
+                sb.append("{").append(e.getValue()).append("} ").append(e.getKey()).append('\n');
+            }   
+        }
+        return sb.toString();
     }
 }
