@@ -31,7 +31,7 @@ public class MacProtection {
         
         try(MacInputStream mis = new MacInputStream(FileUtils.openInputStream(dirToScan), algorithm, key.getBytes())){
             mis.readAll();
-            System.out.println(mis.getMacString());
+            System.out.println(mis.getMacBase64());
             System.out.println("");
         } catch (IOException | NoSuchAlgorithmException ex) {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
@@ -43,7 +43,7 @@ public class MacProtection {
             System.out.println(f);
             try(MacInputStream mis = new MacInputStream(new FileInputStream(f), algorithm, key.getBytes())){
                 mis.readAll();
-                System.out.println(mis.getMacString());
+                System.out.println(mis.getMacHex());
                 System.out.println("");
             } catch (IOException | NoSuchAlgorithmException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);

@@ -61,8 +61,27 @@ public class MacInputStream extends FilterInputStream{
      * @return the MAC hash.
      * @see javax.crypto.Mac
      */
-    public String getMacString(){
+    public String getMacBase64(){
         return Base64.encodeBase64String(this.getMacBytes());
+    }
+    
+    /**
+     * Return the MAC hash on a hexadecimal form.
+     * 
+     * @return the MAC hash.
+     * @see javax.crypto.Mac
+     */
+    public String getMacHex(){
+        final char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        byte[] macBytes = this.getMacBytes();
+        char[] hexChars = new char[macBytes.length * 2];
+        int value;
+        for (int i = 0; i < macBytes.length; i++) {
+            value = macBytes[i] & 0xff;
+            hexChars[i * 2] = hexArray[value >>> 4];
+            hexChars[i * 2 + 1] = hexArray[value & 0x0F];
+        }
+        return String.valueOf(hexChars);
     }
     
     /**
