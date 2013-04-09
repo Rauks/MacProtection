@@ -141,6 +141,10 @@ public class Folder {
      * @return <code>true</code> if the current folder is conform.
      */
     public boolean isConformTo(Folder other){
+        //Same folder name
+        if(!this.getName().equals(other.getName())){
+            return false;
+        }
         //Same number of files
         if(this.getFiles().size() != other.getFiles().size()){
             return false;
