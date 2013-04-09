@@ -6,12 +6,13 @@ package usecase;
 
 import core.MacAlgorithm;
 import core.MacProcessor;
+import core.check.CheckWriter;
 import core.tree.Folder;
 import java.io.File;
-import java.util.Collection;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.RegexFileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,5 +32,14 @@ public class MacProtection {
         Folder root = p.getResult();
         
         System.out.println(root);
+        
+        try {
+            System.out.println("Writing check file...");
+            CheckWriter cw = new CheckWriter(new FileOutputStream(new File("check.test")), root, algorithm, key);
+            cw.write();
+            System.out.println("Done.");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
