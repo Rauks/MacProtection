@@ -37,17 +37,7 @@ public class MacProtection {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Collection<File> files = FileUtils.listFiles(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY);
-        for(Iterator<File> it = files.iterator(); it.hasNext();){
-            File f = it.next();
-            System.out.println(f);
-            try(MacInputStream mis = new MacInputStream(new FileInputStream(f), algorithm, key.getBytes())){
-                mis.readAll();
-                System.out.println(mis.getMacHex());
-                System.out.println("");
-            } catch (IOException | NoSuchAlgorithmException ex) {
-                Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.BASE64);
+        System.out.println(p);
     }
 }
