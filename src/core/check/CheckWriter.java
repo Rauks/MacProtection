@@ -29,6 +29,8 @@ public class CheckWriter extends CheckMac{
      * 
      * @param out the output stream.
      * @param folder the folder.
+     * @param algorithm the algorithm used to calculate the Mac hash.
+     * @param key the key seed used to calculate the Mac hash.
      */
     public CheckWriter(OutputStream out, Folder folder, MacAlgorithm algorithm, String key){
         super(algorithm, key);
@@ -46,7 +48,7 @@ public class CheckWriter extends CheckMac{
     public void write(){
         try(ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(this.out))){
                 byte[] hash = this.getCheckMac(this.folder);
-                oos.write(hash.length);
+                oos.writeInt(hash.length);
                 oos.write(hash);
                 oos.writeObject(this.folder);
                 oos.flush();
