@@ -4,6 +4,7 @@
  */
 package core;
 
+import core.tree.Folder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,13 +26,19 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 public class MacProcessor {
     public enum MacOutput{BASE64, HEXADECIMAL}
     
-    private HashMap<String, String> macMap;
+    private Folder root;
+    
+    private File dirToScan;
+    private MacAlgorithm algorithm;
+    private String key;
+    private MacOutput macOutput;
     
     /**
-     * Create a MacProcessor who will scan the folder <code>dirToScan</code>, retrieves all the files and calculate the Mac hash of each file.
+     * Create a MacProcessor.
      * The Mac algorithm used is <code>algorithm</code> and the secret key seed used is <code>key</code>.
-     * <p>
      * The mac is saved in <code>macOutput</code> form.
+     * <p>
+     * To run the scan processus see {@link MacProcessor#process}.
      * 
      * @param dirToScan the folder containing the files and sub-folders to be scanned.
      * @param algorithm the algorithm used to calculate the Mac hash.
@@ -41,24 +48,62 @@ public class MacProcessor {
      * @see MacOutput
      */
     public MacProcessor(File dirToScan, MacAlgorithm algorithm, String key, MacOutput macOutput){
-        this.macMap = new HashMap<>();
-        Collection<File> files = FileUtils.listFiles(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY);
+        this.dirToScan = dirToScan;
+        this.algorithm = algorithm;
+        this.key = key;
+        this.macOutput = macOutput;
+    }
+    
+    /**
+     * Constructs a {@link Folder} node from <code>dir</code>. The folders scturcture is builded recurcively and the Mac hash are calculated for all the folder's files.
+     * 
+     * @param dir the dir used to build the {@link Folder};
+     * @return the builded {@link Folder}.
+     */
+    private Folder initFolder(File dir){
+        Folder f = new Folder(dir.getName());
+        Collection<File> files = FileUtils.listFilesAndDirs(dir, new RegexFileFilter("^(.*?)"), null);
         for(Iterator<File> it = files.iterator(); it.hasNext();){
-            File f = it.next();
-            try(MacInputStream mis = new MacInputStream(new FileInputStream(f), algorithm, key.getBytes())){
-                mis.readAll();
-                switch(macOutput){
-                    case BASE64:
-                        this.macMap.put(f.getPath(), mis.getMacBase64());
-                        break;
-                    case HEXADECIMAL:
-                        this.macMap.put(f.getPath(), mis.getMacHex());
-                        break;
+            File file = it.next();
+            if(file.isFile()){
+                try(MacInputStream mis = new MacInputStream(new FileInputStream(file), algorithm, key.getBytes())){
+                    mis.readAll();
+                    switch(macOutput){
+                        case BASE64:
+                            f.addFile(file.getName(), mis.getMacBase64());
+                            break;
+                        case HEXADECIMAL:
+                            f.addFile(file.getName(), mis.getMacHex());
+                            break;
+                    }
+                } catch (IOException | NoSuchAlgorithmException ex) {
+                    Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException | NoSuchAlgorithmException ex) {
-                Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            else if(file.isDirectory()){
+                f.addFolder(initFolder(file));
             }
         }
+        
+        return f;
+    }
+    
+    /**
+     * Construct the {@link Folder} tree that is retrievable with {@link MacProcessor#getResult}.
+     * 
+     * @warning The process may take some time.
+     */
+    public void process(){
+        this.root = this.initFolder(this.dirToScan);
+    }
+    
+    /**
+     * Return the {@link Folder} tree builded by this processor.
+     * 
+     * @return the root of the {@link Folder} tree.
+     */
+    public Folder getResult(){
+        return this.root;
     }
     
     /**
