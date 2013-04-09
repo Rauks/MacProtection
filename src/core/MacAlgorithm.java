@@ -9,7 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * List the {@link javax.crypto.Mac} usable algorithms.
+ * 
  * @author Karl
  */
 public enum MacAlgorithm {

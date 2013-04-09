@@ -4,12 +4,10 @@
  */
 package core.tree;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Used to represent a folder and files structure. The folders can have sub-folders and files.
