@@ -54,8 +54,8 @@ public class MacProcessor {
     /**
      * Constructs a {@link Folder} node from <code>dir</code>. The folders scturcture is builded recurcively and the Mac hash are calculated for all the folder's files.
      * 
-     * @param dir the dir used to build the {@link Folder};
-     * @return the builded {@link Folder}.
+     * @param dir the dir used to build the {@link Folder} node;
+     * @return the builded {@link Folder} node.
      */
     private Folder initFolder(File dir){
         Folder f = new Folder(dir.getName());
@@ -97,6 +97,7 @@ public class MacProcessor {
      * Return the {@link Folder} tree builded by this processor.
      * 
      * @return the root of the {@link Folder} tree.
+     * @see MacProcessor#process
      */
     public Folder getResult(){
         return this.root;
