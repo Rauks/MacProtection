@@ -79,7 +79,7 @@ public class MacInputStream extends FilterInputStream{
         for (int i = 0; i < macBytes.length; i++) {
             value = macBytes[i] & 0xff;
             hexChars[i * 2] = hexArray[value >>> 4];
-            hexChars[i * 2 + 1] = hexArray[value & 0x0F];
+            hexChars[i * 2 + 1] = hexArray[value & 0x0f];
         }
         return String.valueOf(hexChars);
     }
