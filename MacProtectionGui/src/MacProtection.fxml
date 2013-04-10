@@ -2,6 +2,8 @@
 
 <?import java.lang.*?>
 <?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -9,6 +11,76 @@
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml" fx:controller="MacProtectionController">
   <children>
     <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <center>
+        <SplitPane dividerPositions="0.4104938271604938" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <VBox id="VBox">
+                      <children>
+                        <Label text="Algorithme :">
+                          <labelFor>
+                            <ChoiceBox fx:id="choiceAlgorithm">
+                              <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                  <String fx:value="Item 1" />
+                                  <String fx:value="Item 2" />
+                                  <String fx:value="Item 3" />
+                                </FXCollections>
+                              </items>
+                            </ChoiceBox>
+                          </labelFor>
+                        </Label>
+                        <fx:reference source="choiceAlgorithm" />
+                      </children>
+                    </VBox>
+                    <VBox id="VBox">
+                      <children>
+                        <Label text="Password :">
+                          <labelFor>
+                            <PasswordField fx:id="choicePassword" prefWidth="200.0" />
+                          </labelFor>
+                        </Label>
+                        <fx:reference source="choicePassword" />
+                      </children>
+                    </VBox>
+                    <VBox id="VBox">
+                      <children>
+                        <Label text="Racine du dossier :">
+                          <labelFor>
+                            <Button fx:id="choiceRoot" mnemonicParsing="false" text="Parcourir..." />
+                          </labelFor>
+                        </Label>
+                        <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                          <children>
+                            <TextField fx:id="rootView" disable="true" editable="false" HBox.hgrow="ALWAYS" />
+                            <fx:reference source="choiceRoot" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <TreeView fx:id="treeView" prefHeight="200.0" VBox.vgrow="ALWAYS" />
+                  </children>
+                  <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  </padding>
+                </VBox>
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.5" AnchorPane.rightAnchor="9.5" AnchorPane.topAnchor="0.0">
+                  <children>
+                    <ProgressBar prefWidth="300.0" progress="0.0" HBox.hgrow="ALWAYS" />
+                  </children>
+                </HBox>
+              </children>
+            </AnchorPane>
+          </items>
+        </SplitPane>
+      </center>
       <top>
         <MenuBar>
           <menus>
