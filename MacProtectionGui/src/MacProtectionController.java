@@ -40,7 +40,7 @@ import javafx.stage.DirectoryChooser;
 public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
     private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
-    private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>(new TreeItem<Folder>());
+    private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>();
         
     @FXML
     private void handleQuitAction(ActionEvent event) {
@@ -147,10 +147,20 @@ public class MacProtectionController implements Initializable {
         
         this.choiceAlgorithm.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.choicePassword.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
-        this.choiceRoot.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
-        this.rootView.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
-        this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.choiceRoot.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.choiceAlgorithm.valueProperty().isNull())
+                                            .or(this.choicePassword.textProperty().isEqualTo("")));
+        this.rootView.disableProperty().bind(this.treeView.rootProperty().isNull());
+        this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.treeView.rootProperty().isNull()));
         
         this.treeView.rootProperty().bind(this.rootNode);
+        
+        Platform.runLater(new Runnable(){
+            @Override
+            public void run() {
+                choicePassword.requestFocus();
+            }
+        });
     }    
 }
