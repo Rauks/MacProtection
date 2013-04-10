@@ -11,9 +11,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import usecase.MacProtection;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 
 /**
  * Build the {@link Folder} tree of a real folder.
@@ -31,6 +35,10 @@ public class MacProcessor {
     private MacAlgorithm algorithm;
     private String key;
     private MacOutput macOutput;
+    private int totalFiles;
+    private int processedFiles;
+    
+    private HashSet<MacProcessorListener> listeners;
     
     /**
      * Create a MacProcessor.
@@ -54,6 +62,9 @@ public class MacProcessor {
         this.algorithm = algorithm;
         this.key = key;
         this.macOutput = macOutput;
+        this.listeners = new HashSet<>();
+        this.totalFiles = 0;
+        this.processedFiles = 0;
     }
     
     /**
@@ -64,7 +75,7 @@ public class MacProcessor {
      */
     private Folder initFolder(File dir) throws MacProcessorException{
         if(!dir.isDirectory()){
-            throw new MacProcessorException("The folder to initialize is not a folder.");
+            throw new MacProcessorException("Folder creation error during the processing.");
         }
         Folder f = new Folder(dir.getName());
         for(File file : dir.listFiles()){
@@ -79,14 +90,22 @@ public class MacProcessor {
                             f.addFile(file.getName(), mis.getMacHex());
                             break;
                     }
-                } catch (IOException | NoSuchAlgorithmException ex) {
-                    Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+                    this.processedFiles++;
+                    this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
+                } catch (IOException ex) {
+                    Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new MacProcessorException("IO error during the processing.");
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new MacProcessorException("Mac hash calculation error during the processing.");
                 }
             }
             else if(file.isDirectory()){
                 f.addFolder(initFolder(file));
             }
         }
+        this.processedFiles++;
+        this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
         return f;
     }
     
@@ -96,11 +115,16 @@ public class MacProcessor {
      * @warning The process may take some time. Take a cup of cofee !
      */
     public void process(){
+        this.totalFiles = FileUtils.listFiles(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY).size();
         try {
+            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.STARTED);
             this.root = this.initFolder(this.dirToScan);
+            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
         } catch (MacProcessorException ex) {
+            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
     /**
@@ -112,4 +136,34 @@ public class MacProcessor {
     public Folder getResult(){
         return this.root;
     }
+    
+    /**
+     * Add a {@link MacProcessorListener} to this processor.
+     * 
+     * @param listener The listener to add.
+     */
+    public void addMacProcessorListener(MacProcessorListener listener){
+        this.listeners.add(listener);
+    }
+    
+    /**
+     * Remove a {@link MacProcessorListener} from this processor.
+     * 
+     * @param listener The listener to remove.
+     */
+    public void removeMacProcessorListener(MacProcessorListener listener){
+        this.listeners.remove(listener);
+    }
+    
+    /**
+     * Fire a {@link MacProcessorEvent} reporting the current processing state to all the {@link MacProcessorListener} of this processor.
+     * 
+     * @param state The current processor state.
+     */
+    private void fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState state){
+        MacProcessorEvent evt = new MacProcessorEvent(this.totalFiles, this.processedFiles, state);
+        for(Iterator<MacProcessorListener> it = this.listeners.iterator(); it.hasNext();){
+            it.next().macProcessorPerformed(evt);
+        }
+    } 
 }
