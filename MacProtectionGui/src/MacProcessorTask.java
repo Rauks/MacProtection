@@ -3,6 +3,7 @@ import core.MacAlgorithm;
 import core.processor.MacProcessor;
 import core.processor.MacProcessor.MacOutput;
 import core.processor.MacProcessorEvent;
+import core.processor.MacProcessorException;
 import core.processor.MacProcessorListener;
 import core.tree.Folder;
 import java.io.File;
@@ -16,7 +17,8 @@ import javafx.concurrent.Task;
  */
 
 /**
- *
+ * Used to perform a {@link MacProcessor} process.
+ * 
  * @author Karl
  */
 public class MacProcessorTask extends Task{
@@ -26,22 +28,22 @@ public class MacProcessorTask extends Task{
         return this.progress.getReadOnlyProperty();
     }
     
-    private File dirToScan;
-    private MacAlgorithm algorithm;
-    private String key;
-    private MacProcessor.MacOutput macOutput;
+    private MacProcessor processor;
 
-    public MacProcessorTask(File dirToScan, MacAlgorithm algorithm, String key, MacOutput macOutput) {
-        this.dirToScan = dirToScan;
-        this.algorithm = algorithm;
-        this.key = key;
-        this.macOutput = macOutput;
-    }
-    
-    @Override
-    protected Folder call() throws Exception {
-        MacProcessor p = new MacProcessor(this.dirToScan, this.algorithm, this.key, this.macOutput);
-        p.addMacProcessorListener(new MacProcessorListener() {
+    /**
+     * Create a {@code MacProcessorTask} performig a {@link MacProcessor} process.
+     * 
+     * @param dirToScan The folder containing the files and sub-folders to be scanned.
+     * @param algorithm The algorithm used to calculate the Mac hash of the files.
+     * @param key The key seed used to calculate the Mac hash of the files.
+     * @param macOutput The Mac hash output form.
+     * @throws MacProcessorException If the {@code dirToScan} is not a directory.
+     * @see MacAlgorithm
+     * @see MacOutput
+     */
+    public MacProcessorTask(File dirToScan, MacAlgorithm algorithm, String key, MacOutput macOutput) throws MacProcessorException {
+        this.processor = new MacProcessor(dirToScan, algorithm, key, macOutput);
+        processor.addMacProcessorListener(new MacProcessorListener() {
             @Override
             public void macProcessorPerformed(MacProcessorEvent evt) {
                 switch(evt.getState()){
@@ -60,7 +62,17 @@ public class MacProcessorTask extends Task{
                 }
             }
         });
-        p.process();
-        return p.getResult();
+    }
+    
+    /**
+     * Invoked when the execution is requested by a {@link Thread}. A {@link Folder} tree is builded using a {@link MacProcessor}.
+     * 
+     * @return The builded {@link Folder} tree.
+     * @throws Exception An unhandled exception which occurred during the background operation.
+     */
+    @Override
+    protected Folder call() throws Exception {
+        processor.process();
+        return processor.getResult();
     }
 }

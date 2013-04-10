@@ -57,6 +57,7 @@ public class MacProcessor {
      * @param algorithm The algorithm used to calculate the Mac hash of the files.
      * @param key The key seed used to calculate the Mac hash of the files.
      * @param macOutput The Mac hash output form.
+     * @throws MacProcessorException If the {@code dirToScan} is not a directory.
      * @see MacAlgorithm
      * @see MacOutput
      */
@@ -90,6 +91,7 @@ public class MacProcessor {
      * 
      * @param dir The dir used to build the {@link Folder} node.
      * @return The builded {@link Folder} node.
+     * @throws MacProcessorException If the {@code dir} is not a directory.
      */
     private Folder initFolder(File dir) throws MacProcessorException{
         if(!dir.isDirectory()){
