@@ -66,7 +66,6 @@ public class MacProcessor {
         }
         Folder f = new Folder(dir.getName());
         for(File file : dir.listFiles()){
-            System.out.println(file);
             if(file.isFile()){
                 try(MacInputStream mis = new MacInputStream(new FileInputStream(file), algorithm, key.getBytes())){
                     mis.readAll();
