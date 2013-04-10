@@ -17,11 +17,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- * A <code>MacInputStream</code> contains some other input stream, which it uses as its basic source of data.
- * A Mac hash is calculated during the input stream reading and can be retrieved with {@link MacInputStream#getMacBytes}, {@link MacInputStream#getMacHex} or {@link MacInputStream#getMacBase64}.
+ * A {@code MacInputStream} contains some other input stream, which it uses as its basic source of data.
+ * A Mac hash is calculated during the input stream reading and can be retrieved with {@link #getMacBytes}, {@link #getMacHex} or {@link #getMacBase64}.
  * 
  * @see javax.crypto.Mac
- * @see java.io.InputStream
+ * @see InputStream
  * 
  * @author Karl
  */
@@ -30,12 +30,12 @@ public class MacInputStream extends FilterInputStream{
     private Mac macMarkClone;
 
     /**
-     * Create a new MacInputStream from an {@link InputStream}. The seed is using to initialize the secret key.
+     * Create a new {@code MacInputStream} from an {@link InputStream}. The seed is using to initialize the secret key.
      * 
-     * @param is the input stream.
-     * @param algorithm the standard name of the requested MAC algorithm.
-     * @param seed the seed for the secret key.
-     * @throws NoSuchAlgorithmException if no Provider supports a MacSpi implementation for the specified algorithm.
+     * @param is The input stream.
+     * @param algorithm The Mac algorithm used to calculate the Mac hash.
+     * @param seed The seed for the secret key used to calculate the Mac hash.
+     * @throws NoSuchAlgorithmException If no Provider supports a MacSpi implementation for the specified algorithm.
      * @see javax.crypto.spec.SecretKeySpec
      * @see javax.crypto.Mac
      */
@@ -51,9 +51,9 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Return the MAC hash on a bytes array form.
+     * Return the Mac hash on a bytes array form.
      * 
-     * @return the MAC hash.
+     * @return The Mac hash.
      * @see javax.crypto.Mac
      * @see java.io.InputStream
      */
@@ -62,9 +62,9 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Return the MAC hash on a base64 form.
+     * Return the Mac hash on a base64 form.
      * 
-     * @return the MAC hash.
+     * @return The Mac hash.
      * @see javax.crypto.Mac
      */
     public String getMacBase64(){
@@ -72,9 +72,9 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Return the MAC hash on a hexadecimal form.
+     * Return the Mac hash on a hexadecimal form.
      * 
-     * @return the MAC hash.
+     * @return The Mac hash.
      * @see javax.crypto.Mac
      */
     public String getMacHex(){
@@ -92,13 +92,13 @@ public class MacInputStream extends FilterInputStream{
     
     /**
      * Marks the current position in this input stream.
-     * A subsequent call to the <code>reset</code> method repositions this stream at the last marked position so that subsequent reads re-read the same bytes.
-     * <p>
-     * The <code>readlimit</code> argument tells this input stream to allow that many bytes to be read before the mark position gets invalidated.
+     * A subsequent call to the {@link #reset} method repositions this stream at the last marked position so that subsequent reads re-read the same bytes.
+     * <p/>
+     * The {@code readlimit} argument tells this input stream to allow that many bytes to be read before the mark position gets invalidated.
      *
-     * @param readlimit the maximum limit of bytes that can be read before the mark position becomes invalid.
+     * @param readlimit The maximum limit of bytes that can be read before the mark position becomes invalid.
      * @see java.io.FilterInputStream#in
-     * @see java.io.FilterInputStream#reset()
+     * @see java.io.FilterInputStream#reset
      */
     @Override
     public void mark(int readLimit){
@@ -113,12 +113,11 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Repositions this stream to the position at the time the
-     * <code>mark</code> method was last called on this input stream.
+     * Repositions this stream to the position at the time the {@link #mark} method was last called on this input stream.
      *
-     * @exception  IOException  if the stream has not been marked or if the mark has been invalidated.
-     * @see        java.io.FilterInputStream#in
-     * @see        java.io.FilterInputStream#mark(int)
+     * @exception IOException If the stream has not been marked or if the mark has been invalidated.
+     * @see java.io.FilterInputStream#in
+     * @see java.io.FilterInputStream#mark(int)
      */
     @Override
     public void reset() throws IOException{
@@ -131,12 +130,12 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Read all the datas of the {@link InputStream} and calculate the MAC hash.
-     * <p>
-     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the MAC hash value. 
+     * Read all the datas of the {@link InputStream} and calculate the Mac hash.
+     * <p/>
+     * Use {@link #getMacBytes} or {@link #getMacString} in order to retrieve the Mac hash value. 
      * 
      * @return the number of bytes readed.
-     * @see java.io.MacInputStream#read()
+     * @see #read
      */
     public int readAll() {
         int read = 0;
@@ -155,22 +154,22 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Reads up to <code>len</code> bytes of data from the input stream into an array of bytes.
-     * An attempt is made to read as many as <code>len</code> bytes, but a smaller number may be read.
+     * Reads up to {@code len} bytes of data from the input stream into an array of bytes.
+     * An attempt is made to read as many as {@code len} bytes, but a smaller number may be read.
      * The number of bytes actually read is returned as an integer.
-     * <p>
+     * <p/>
      * This method blocks until input data is available, end of file is detected, or an exception is thrown.
-     * <p>
-     * The MAC hash is updated.
-     * <p>
-     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * <p/>
+     * The Mac hash is updated.
+     * <p/>
+     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial Mac hash value. 
      * 
-     * @param b the buffer into which the data is read.
-     * @param off the start offset in array <code>b</code> at which the data is written.
-     * @param len the maximum number of bytes to read.
-     * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
-     * @throws IOException if an I/O error occurs.
-     * @see java.io.MacInputStream#read()
+     * @param b The buffer into which the data is read.
+     * @param off The start offset in array {@code b} at which the data is written.
+     * @param len The maximum number of bytes to read.
+     * @return The total number of bytes read into the buffer, or {@code -1} if there is no more data because the end of the stream has been reached.
+     * @throws IOException If an I/O error occurs.
+     * @see #read
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -182,16 +181,15 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Reads the next byte of data from the input stream. The value byte is
-     * returned as an <code>int</code> in the range <code>0</code> to
-     * <code>255</code>.
-     * <p>
-     * The MAC hash is updated.
-     * <p>
-     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * Reads the next byte of data from the input stream.
+     * The value byte is returned as an {@code int} in the range {@code 0} to {@code 255}.
+     * <p/>
+     * The Mac hash is updated.
+     * <p/>
+     * Use {@link #getMacBytes} or {@link #getMacString} in order to retrieve the partial Mac hash value. 
      * 
-     * @return the next byte of data, or -1 if the end of the stream is reached.
-     * @throws IOException if an I/O error occurs.
+     * @return The next byte of data, or {@code -1} if the end of the stream is reached.
+     * @throws IOException If an I/O error occurs.
      */
     @Override
     public int read() throws IOException {
@@ -203,25 +201,23 @@ public class MacInputStream extends FilterInputStream{
     }
     
     /**
-     * Reads some number of bytes from the input stream and stores them into
-     * the buffer array <code>b</code>. The number of bytes actually read is
-     * returned as an integer.  This method blocks until input data is
-     * available, end of file is detected, or an exception is thrown.
-     *
-     * <p> If the length of <code>b</code> is zero, then no bytes are read and
-     * <code>0</code> is returned; otherwise, there is an attempt to read at
-     * least one byte. If no byte is available because the stream is at the
-     * end of the file, the value <code>-1</code> is returned; otherwise, at
-     * least one byte is read and stored into <code>b</code>.
-     * <p>
-     * The MAC hash is updated.
-     * <p>
-     * Use {@link #getMacBytes()} or {@link #getMacString()} in order to retrieve the partial MAC hash value. 
+     * Reads some number of bytes from the input stream and stores them into the buffer array {@code b}.
+     * The number of bytes actually read is returned as an integer. 
+     * This method blocks until input data is available, end of file is detected, or an exception is thrown.
+     * <p/>
+     * If the length of {@code b} is zero, then no bytes are read and {@code 0} is returned; 
+     * otherwise, there is an attempt to read at least one byte.
+     * If no byte is available because the stream is at the end of the file, the value {@code -1} is returned;
+     * otherwise, at least one byte is read and stored into {@code b}.
+     * <p/>
+     * The Mac hash is updated.
+     * <p/>
+     * Use {@link #getMacBytes} or {@link #getMacString} in order to retrieve the partial Mac hash value. 
      * 
-     * @param b the buffer into which the data is read.
-     * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
-     * @throws IOException if an I/O error occurs.
-     * @see java.io.MacInputStream#read()
+     * @param b The buffer into which the data is read.
+     * @return The total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the end of the stream has been reached.
+     * @throws IOException If an I/O error occurs.
+     * @see #read
      */
     @Override
     public int read(byte[] b) throws IOException {

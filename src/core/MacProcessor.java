@@ -15,8 +15,8 @@ import usecase.MacProtection;
 
 /**
  * Build the {@link Folder} tree of a real folder.
- * <p>
- * To build the tree use {@link MacProcessor#process} and to get que result tree use {@link MacProcessor#getResult}.
+ * <p/>
+ * To build the tree use {@link #process} and to get que result tree use {@link #getResult}.
  * 
  * @author Karl
  */
@@ -32,15 +32,15 @@ public class MacProcessor {
     
     /**
      * Create a MacProcessor.
-     * The Mac algorithm used is <code>algorithm</code> and the secret key seed used is <code>key</code>.
-     * The mac is saved in <code>macOutput</code> form.
-     * <p>
-     * To run the scan processus see {@link MacProcessor#process}.
+     * The Mac algorithm used is {@code algorithm} and the secret key seed used is {@code key}.
+     * The mac is saved in {@code macOutput} form.
+     * <p/>
+     * To run the scan processus see {@link #process}.
      * 
-     * @param dirToScan the folder containing the files and sub-folders to be scanned.
-     * @param algorithm the algorithm used to calculate the Mac hash.
-     * @param key the key seed used to calculate the Mac hash.
-     * @param macOutput the Mac hash output form.
+     * @param dirToScan The folder containing the files and sub-folders to be scanned.
+     * @param algorithm The algorithm used to calculate the Mac hash of the files.
+     * @param key The key seed used to calculate the Mac hash of the files.
+     * @param macOutput The Mac hash output form.
      * @see MacAlgorithm
      * @see MacOutput
      */
@@ -55,12 +55,15 @@ public class MacProcessor {
     }
     
     /**
-     * Constructs a {@link Folder} node from <code>dir</code>. The folders scturcture is builded recurcively and the Mac hash are calculated for all the folder's files.
+     * Constructs a {@link Folder} node from {@code dir}. The folders scturcture is builded recurcively and the Mac hash are calculated for all the folder's files.
      * 
-     * @param dir the dir used to build the {@link Folder} node;
-     * @return the builded {@link Folder} node.
+     * @param dir The dir used to build the {@link Folder} node.
+     * @return The builded {@link Folder} node.
      */
-    private Folder initFolder(File dir){
+    private Folder initFolder(File dir) throws MacProcessorException{
+        if(!dir.isDirectory()){
+            throw new MacProcessorException("The folder to initialize is not a folder.");
+        }
         Folder f = new Folder(dir.getName());
         for(File file : dir.listFiles()){
             System.out.println(file);
@@ -83,24 +86,27 @@ public class MacProcessor {
                 f.addFolder(initFolder(file));
             }
         }
-        
         return f;
     }
     
     /**
-     * Construct a {@link Folder} tree that is retrievable with {@link MacProcessor#getResult}.
+     * Construct a {@link Folder} tree that is retrievable with {@link #getResult}.
      * 
-     * @warning The process may take some time.
+     * @warning The process may take some time. Take a cup of cofee !
      */
     public void process(){
-        this.root = this.initFolder(this.dirToScan);
+        try {
+            this.root = this.initFolder(this.dirToScan);
+        } catch (MacProcessorException ex) {
+            Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
      * Return the {@link Folder} tree builded by this processor.
      * 
-     * @return the root of the {@link Folder} tree.
-     * @see MacProcessor#process
+     * @return The root of the {@link Folder} tree.
+     * @see #process
      */
     public Folder getResult(){
         return this.root;

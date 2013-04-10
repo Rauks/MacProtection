@@ -26,11 +26,12 @@ public class CheckReader extends CheckMac{
     private Folder root;
     
     /**
-     * Create a <code>CheckWriter</code> who read an {@link InputStream} to get the datas of a check file and build a {@link Folder} tree.
+     * Create a {@code CheckWriter} who can read in an {@link InputStream} to get the datas of a check file and build a {@link Folder} tree.
      * 
-     * @param in the input stream.
-     * @param algorithm the algorithm used to calculate the Mac hash.
-     * @param key the key seed used to calculate the Mac hash.
+     * @param in The input stream.
+     * @param algorithm The Mac algorithm used in the check file writing process.
+     * @param key The password used in the check file writing process.
+     * @see CheckWriter
      */
     public CheckReader(InputStream in, MacAlgorithm algorithm, String key){
         super(algorithm, key);
@@ -38,9 +39,9 @@ public class CheckReader extends CheckMac{
     }
     
     /**
-     * Construct a {@link Folder} tree that is retrievable with {@link CheckReader#getRootFolder}.
+     * Construct a {@link Folder} tree from the check file that is retrievable with {@link CheckReader#getRootFolder}.
      * 
-     * @throws CheckReaderMacException In case of check file rejection. This append when the inner Mac hash and the calculated hash of differ.
+     * @throws CheckReaderMacException In case of check file rejection. This append when the inner Mac hash and the calculated verification Mac hash differ.
      * @throws CheckReaderReadingException In case of check file structure error. The file is not a check file or may be corrupted.
      */
     public void read() throws CheckReaderMacException, CheckReaderReadingException{
@@ -66,9 +67,9 @@ public class CheckReader extends CheckMac{
     }
     
     /**
-     * Returns the builded {@link Folder} tree.
+     * Returns the builded {@link Folder} tree from the check file.
      * 
-     * @return the builded {@link Folder} tree.
+     * @return The builded {@link Folder} tree.
      * @see CheckReader#read
      */
     public Folder getRootFolder(){

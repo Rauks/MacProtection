@@ -30,10 +30,10 @@ public abstract class CheckMac {
     }
     
     /**
-     * Get the Mac hash used to protect an object.
+     * Get the Mac hash used to protect a serializable object.
      * 
-     * @param object the object to protect with que Mac hash.
-     * @return the Mac hash.
+     * @param object The serializable object.
+     * @return The Mac hash in bytes array form.
      * @see javax.crypto.Mac
      */
     protected byte[] getCheckMac(Serializable object){

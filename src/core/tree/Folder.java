@@ -11,10 +11,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
- * Used to represent a folder and files structure. The folders can have sub-folders and files.
- * Each file is represented by his <code>name</code> and his <code>hash</code> and each folder by his <code>name</code>.
- * <p>
- * The conformity of a folder relative to another folder reference can be checked with {@link Folder#isConformTo}.
+ * Used to represent a folder structure. The folders can have sub-folders and files.
+ * Each file is represented by his {@code name} and his {@code hash} and each folder by his {@code name}.
+ * <p/>
+ * The conformity of a folder relative to another folder reference can be checked with {@link #isConformTo}.
  * 
  * @author Karl
  */
@@ -29,7 +29,7 @@ public class Folder implements Serializable{
     /**
      * Create a folder.
      * 
-     * @param name the name of the folder.
+     * @param name The name of the folder.
      */
     public Folder(String name){
         this.name = name;
@@ -40,7 +40,7 @@ public class Folder implements Serializable{
     /**
      * Add a sub-folder into the folder;
      * 
-     * @param folder the sub-folder to add. 
+     * @param folder The sub-folder to add. 
      */
     public void addFolder(Folder folder){
         this.folders.add(folder);
@@ -49,8 +49,8 @@ public class Folder implements Serializable{
     /**
      * Add a file into the folder
      * 
-     * @param name the name of the file to add.
-     * @param hash the hash of the file.
+     * @param name The name of the file to add.
+     * @param hash The hash of the file.
      */
     public void addFile(String name, String hash){
         this.files.put(name, hash);
@@ -59,8 +59,8 @@ public class Folder implements Serializable{
     /**
      * Get the hash of a file by his name.
      * 
-     * @param name the name of the file.
-     * @return the hash of the file or <code>null</code> if there is no file with this name.
+     * @param name The name of the file.
+     * @return The hash of the file or {@code null} if there is no file with this name.
      */
     public String getHash(String name){
         return this.files.get(name);
@@ -69,8 +69,8 @@ public class Folder implements Serializable{
     /**
      * Get the files of this folder with their hash.
      * 
-     * @warning return only the files of the folder, to get the files of the sub-folders recurcively see {@link Folder#getAllFiles}.
-     * @return the files.
+     * @warning Return only the files of the folder, to get the files of the sub-folders recurcively see {@link #getAllFiles}.
+     * @return The files.
      */
     public HashMap<String, String> getFiles(){
         return this.files;
@@ -79,8 +79,8 @@ public class Folder implements Serializable{
     /**
      * Get the files of this folder with their hash recurcively.
      * 
-     * @warning return all the files recurcively, to get only the files of the folder and not of the sub-folders see {@link Folder#getFiles}.
-     * @return the files.
+     * @warning Return all the files recurcively, to get only the files of the folder and not of the sub-folders see {@link #getFiles}.
+     * @return The files.
      */
     public HashMap<String, String> getAllFiles(){
         HashMap<String, String> out = new HashMap<>();
@@ -94,7 +94,7 @@ public class Folder implements Serializable{
     /**
      * Get the name of this folder.
      * 
-     * @return the name of this folder. 
+     * @return The name of this folder. 
      */
     public String getName(){
         return this.name;
@@ -103,8 +103,8 @@ public class Folder implements Serializable{
     /**
      * Get a sub-folder by his name.
      * 
-     * @param name the name of the sub-folder.
-     * @return the sub-folder or <code>null</code> if there is no sub-folder with this name.
+     * @param name The name of the sub-folder.
+     * @return The sub-folder or {@code null} if there is no sub-folder with this name.
      */
     public Folder getSubFolder(String name){
         for(Iterator<Folder> it = this.getSubFolders().iterator(); it.hasNext();){
@@ -119,8 +119,8 @@ public class Folder implements Serializable{
     /**
      * Get the direct sub-folders of this folder.
      * 
-     * @warning only the direct sub-folders are returned, to get the sub-folders recurcively see {@link Folder#getAllFolders}.
-     * @return the sub-folders.
+     * @warning Only the direct sub-folders are returned, to get the sub-folders recurcively see {@link #getAllFolders}.
+     * @return The sub-folders.
      */
     public HashSet<Folder> getSubFolders(){
         return this.folders;
@@ -129,8 +129,8 @@ public class Folder implements Serializable{
     /**
      * Get all the sub-folders of this folder recurcively.
      * 
-     * @warning return all the sub-folders recurcively, to get only the direct sub-folders see {@link Folder#getFolders}.
-     * @return the sub-folders.
+     * @warning Return all the sub-folders recurcively, to get only the direct sub-folders see {@link #getFolders}.
+     * @return The sub-folders.
      */
     public HashSet<Folder> getAllSubFolders(){
         HashSet<Folder> out = new HashSet<>();
@@ -142,12 +142,13 @@ public class Folder implements Serializable{
     }
     
     /**
-     * Check of the folder is conform to <code>other<code> folder. 
-     * To be conform the folder structure must be the same between the current folder and <code>other</code>, 
-     * the contained files must have the same <code>names</code> and <code>hash</code>.
+     * Check of the folder is conform to an {@code other} folder. 
+     * To be conform the folder structure must be the same between the current folder and the {@code other}, 
+     * the contained files must have the same {@code names} and the same {@code hash}.
      * 
-     * @param other the folder used to validate the current folder.
-     * @return <code>true</code> if the current folder is conform.
+     * @warning The hashs must have the same representation.
+     * @param other The folder used to validate the current folder.
+     * @return {@code true} if the current folder is conform.
      */
     public boolean isConformTo(Folder other){
         //Same folder name
@@ -185,7 +186,7 @@ public class Folder implements Serializable{
     /**
      * Return all the files and the sub-folders of this folder.
      * 
-     * @return all the files and the sub-folders view.
+     * @return All the files and the sub-folders view.
      */
     @Override
     public String toString(){

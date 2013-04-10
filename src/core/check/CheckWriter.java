@@ -25,12 +25,12 @@ public class CheckWriter extends CheckMac{
     private Folder folder;
     
     /**
-     * Create a <code>CheckWriter</code> who write a check file for a <code>folder</code> into the {@link OutputStream} <code>out</code>.
+     * Create a {@link CheckWriter} who write a check file based on a {@link folder} into an {@link OutputStream}.
      * 
-     * @param out the output stream.
-     * @param folder the folder.
-     * @param algorithm the algorithm used to calculate the Mac hash.
-     * @param key the key seed used to calculate the Mac hash.
+     * @param out The check file output stream.
+     * @param folder The folder.
+     * @param algorithm The Mac algorithm used to certifiate the check file.
+     * @param key The password used to certifiate the check file.
      */
     public CheckWriter(OutputStream out, Folder folder, MacAlgorithm algorithm, String key){
         super(algorithm, key);
@@ -39,11 +39,11 @@ public class CheckWriter extends CheckMac{
     }
     
     /**
-     * Write the check file.
-     * <p>
-     * The folder is serialized, the check Mac hash is added. The output stream is GZIPed.
+     * Write the check file into the {@link OutputStream}.
+     * <p/>
+     * The folder is serialized, the validation Mac hash is added. The output stream is GZIPed.
      * 
-     * @see GZIPOutputStream
+     * @see java.util.zip.GZIPOutputStream
      */
     public void write(){
         try(ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(this.out))){
