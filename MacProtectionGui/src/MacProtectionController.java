@@ -66,6 +66,7 @@ public class MacProtectionController implements Initializable {
                             Folder result = (Folder) processor.get();
                             final TreeItemBuildingTask treeBuilder = new TreeItemBuildingTask(result);
                             final Thread treeBuilderThread = new Thread(treeBuilder);
+                            treeProgress.progressProperty().bind(treeBuilder.processProgressProperty());
                             treeBuilder.setOnSucceeded(new EventHandler(){
                                 @Override
                                 public void handle(Event t) {
