@@ -190,22 +190,6 @@ public class Folder implements Serializable{
      */
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("FOLDERS:").append('\n');
-        HashSet<Folder> allFolders;
-        if((allFolders = this.getAllSubFolders()) != null){
-            for(Iterator<Folder> it = allFolders.iterator(); it.hasNext();){
-                sb.append(it.next().getName()).append('\n');
-            }
-        }
-        sb.append('\n').append("FILES:").append('\n');
-        HashMap<String, String> allFiles;
-        if((allFiles = this.getAllFiles()) != null){
-            for(Iterator<Entry<String, String>> it = allFiles.entrySet().iterator(); it.hasNext();){
-                Entry e = it.next();
-                sb.append("{").append(e.getValue()).append("} ").append(e.getKey()).append('\n');
-            }   
-        }
-        return sb.toString();
+        return this.name;
     }
 }
