@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package core;
+package core.processor;
 
+import core.MacAlgorithm;
+import core.MacInputStream;
 import core.tree.Folder;
 import java.io.File;
 import java.io.FileInputStream;

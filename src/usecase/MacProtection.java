@@ -5,8 +5,8 @@
 package usecase;
 
 import core.MacAlgorithm;
-import core.MacProcessor;
-import core.MacProcessorException;
+import core.processor.MacProcessor;
+import core.processor.MacProcessorException;
 import core.check.CheckReader;
 import core.check.CheckReaderMacException;
 import core.check.CheckReaderReadingException;
