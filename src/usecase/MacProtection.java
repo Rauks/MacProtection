@@ -5,12 +5,14 @@
 package usecase;
 
 import core.MacAlgorithm;
-import core.processor.MacProcessor;
-import core.processor.MacProcessorException;
 import core.check.CheckReader;
 import core.check.CheckReaderMacException;
 import core.check.CheckReaderReadingException;
 import core.check.CheckWriter;
+import core.processor.MacProcessor;
+import core.processor.MacProcessorEvent;
+import core.processor.MacProcessorException;
+import core.processor.MacProcessorListener;
 import core.tree.Folder;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,9 +37,16 @@ public class MacProtection {
         try {
             //Processing a physical repertory
             MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.HEXADECIMAL);
+            p.addMacProcessorListener(new MacProcessorListener() {
+                @Override
+                public void macProcessorPerformed(MacProcessorEvent evt) {
+                    System.out.println(evt.getState() + " : " + evt.getProcessedFiles() + "/" + evt.getTotalFiles());
+                }
+            });
             p.process();
             Folder physicalRoot = p.getResult();
             
+            System.out.println();
             System.out.println(physicalRoot);
             
             //Creation of check file for the folder
