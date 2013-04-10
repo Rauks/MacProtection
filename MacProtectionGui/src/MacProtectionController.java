@@ -13,13 +13,18 @@ import core.tree.Folder;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -38,7 +43,8 @@ import javafx.stage.DirectoryChooser;
  */
 public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
-    private ReadOnlyDoubleWrapper processProgress = new ReadOnlyDoubleWrapper(0d);;
+    private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
+    private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>(new TreeItem<Folder>());
     
     @FXML
     private void handleQuitAction(ActionEvent event) {
@@ -57,37 +63,58 @@ public class MacProtectionController implements Initializable {
     @FXML
     private void handleLoadRootAction(ActionEvent event) {
         File dirToScan = this.dirChooser.showDialog(((Node)event.getTarget()).getScene().getWindow());
+        this.isProcessing.set(true);
         if(dirToScan != null){
             this.rootView.setText(dirToScan.getName());
-            processProgress.set(ProgressBar.INDETERMINATE_PROGRESS);
-            try {
-                MacProcessor p = new MacProcessor(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.BASE64);
-                p.addMacProcessorListener(new MacProcessorListener() {
-                    @Override
-                    public void macProcessorPerformed(MacProcessorEvent evt) {
-                        switch(evt.getState()){
-                            case RUNNING:
-                                processProgress.set((double)evt.getProcessedFiles() / (double)evt.getTotalFiles());
-                                break;
-                            case CANCELED:
-                                processProgress.set(ProgressBar.INDETERMINATE_PROGRESS);
-                                break;
-                            case STARTED:
-                                processProgress.set(0d);
-                        }
+            final MacProcessorTask processor = new MacProcessorTask(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
+            this.processorProgress.progressProperty().bind(processor.processProgressProperty());
+            processor.setOnSucceeded(new EventHandler(){
+                @Override
+                public void handle(Event t) {
+                    try {
+                        Folder result = (Folder) processor.get();
+                        final TreeItemBuildingTask treeBuilder = new TreeItemBuildingTask(result);
+                        treeBuilder.setOnSucceeded(new EventHandler(){
+                            @Override
+                            public void handle(Event t) {
+                                try {
+                                    TreeItem<Folder> root = (TreeItem<Folder>) treeBuilder.get();
+                                    System.out.println(root);
+                                    rootNode.set(root);
+                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.INFO, "Done.");
+                                } catch (InterruptedException | ExecutionException ex) {
+                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                                } finally{
+                                    isProcessing.set(false);
+                                }
+                            }
+                        });
+                        treeBuilder.setOnFailed(new EventHandler(){
+                            @Override
+                            public void handle(Event t) {
+                                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                                isProcessing.set(false);
+                            }
+                        });
+                        new Thread(treeBuilder).start();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                        isProcessing.set(false);
                     }
-                });
-                p.process();
-                Folder folder = p.getResult();
-                this.treeView.setRoot(this.buildFolderTreeItem(folder));
-                
-                
-            } catch (MacProcessorException ex) {
-                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                }
+            });
+            processor.setOnFailed(new EventHandler(){
+                @Override
+                public void handle(Event t) {
+                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
+                     isProcessing.set(false);
+                }
+            });
+            new Thread(processor).start();
         }
         else{
             this.rootView.setText("");
+            this.isProcessing.set(false);
         }
     }
     
@@ -103,6 +130,8 @@ public class MacProtectionController implements Initializable {
     private TreeView treeView;
     @FXML
     private ProgressBar processorProgress;
+    @FXML
+    private ProgressBar treeProgress;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -113,6 +142,12 @@ public class MacProtectionController implements Initializable {
         this.dirChooser = new DirectoryChooser();
         this.dirChooser.setTitle("Racine du dossier");
         
-        this.processorProgress.progressProperty().bind(this.processProgress.getReadOnlyProperty());
+        this.choiceAlgorithm.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.choicePassword.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.choiceRoot.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.rootView.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        
+        this.treeView.rootProperty().bind(this.rootNode);
     }    
 }

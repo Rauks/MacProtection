@@ -73,7 +73,7 @@
               <children>
                 <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.5" AnchorPane.rightAnchor="9.5" AnchorPane.topAnchor="0.0">
                   <children>
-                    <ProgressBar prefWidth="300.0" progress="0.0" HBox.hgrow="ALWAYS" />
+                    <ProgressBar fx:id="processorProgress" prefWidth="300.0" progress="0.0" HBox.hgrow="ALWAYS" />
                   </children>
                 </HBox>
               </children>
