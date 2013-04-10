@@ -156,6 +156,7 @@ public class MacProcessor {
                 this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
             }
         } catch (InterruptedException | MacProcessorException ex) {
+            this.executor.shutdownNow();
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
