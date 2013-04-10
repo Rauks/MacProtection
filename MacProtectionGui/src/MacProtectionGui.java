@@ -21,6 +21,9 @@ import javafx.stage.Stage;
 public class MacProtectionGui extends Application {
     public static ArrayList<Thread> WORKING_THREADS = new ArrayList<>();
     
+    /**
+     * Used to interrupt all the registered backgrounds threads of the application.
+     */
     public static void interruptWorkingThread(){
         for(Iterator<Thread> it = MacProtectionGui.WORKING_THREADS.iterator(); it.hasNext();){
             it.next().interrupt();
