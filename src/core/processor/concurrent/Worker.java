@@ -20,7 +20,7 @@ public class Worker extends Thread{
     
     @Override
     public synchronized void run(){
-        while(true){
+        while(!this.isInterrupted()){
             try {
                 Runnable work = this.leader.getRemainingWork().take();
                 work.run();
