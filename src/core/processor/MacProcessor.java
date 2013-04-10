@@ -140,9 +140,13 @@ public class MacProcessor {
         this.processedFiles = 0;
         this.encouredErrors = 0;
         
+        int sysProc = Runtime.getRuntime().availableProcessors();
+        sysProc = (sysProc == 1) ? sysProc : (sysProc - 1);
+        System.out.println(sysProc);
+        
         try {
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.STARTED);
-            this.executor = Executors.newFixedThreadPool(4);
+            this.executor = Executors.newFixedThreadPool(sysProc);
             this.root = this.initFolder(this.dirToScan);
             this.executor.shutdown();
             this.executor.awaitTermination(1, TimeUnit.DAYS);
