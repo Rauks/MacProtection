@@ -24,11 +24,16 @@ import javafx.concurrent.Task;
 public class MacProcessorTask extends Task{
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0d);
     
+    private MacProcessor processor;
+    
+    /**
+     * Return the ProgressProperty of this Task.
+     * 
+     * @return The ProgressProperty of this Task.
+     */
     public ReadOnlyDoubleProperty processProgressProperty(){
         return this.progress.getReadOnlyProperty();
     }
-    
-    private MacProcessor processor;
 
     /**
      * Create a {@code MacProcessorTask} performig a {@link MacProcessor} process.
