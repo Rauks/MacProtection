@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -35,8 +38,11 @@ public class MacProcessor {
     private MacAlgorithm algorithm;
     private String key;
     private MacOutput macOutput;
+    
     private int totalFiles;
     private int processedFiles;
+    private int encouredErrors;
+    private ExecutorService executor;
     
     private HashSet<MacProcessorListener> listeners;
     
@@ -63,8 +69,20 @@ public class MacProcessor {
         this.key = key;
         this.macOutput = macOutput;
         this.listeners = new HashSet<>();
-        this.totalFiles = 0;
-        this.processedFiles = 0;
+    }
+    
+    /**
+     * Increment the processed files counter.
+     */
+    private synchronized void incrProcessedFiles(){
+        this.processedFiles++;
+    }
+    
+    /**
+     * Increment the error during files processing counter.
+     */
+    private synchronized void incrEncouredErrors(){
+        this.encouredErrors++;
     }
     
     /**
@@ -77,28 +95,31 @@ public class MacProcessor {
         if(!dir.isDirectory()){
             throw new MacProcessorException("Folder creation error during the processing.");
         }
-        Folder f = new Folder(dir.getName());
-        for(File file : dir.listFiles()){
+        
+        final Folder f = new Folder(dir.getName());
+        for(final File file : dir.listFiles()){
             if(file.isFile()){
-                try(MacInputStream mis = new MacInputStream(new FileInputStream(file), algorithm, key.getBytes())){
-                    mis.readAll();
-                    switch(this.macOutput){
-                        case BASE64:
-                            f.addFile(file.getName(), mis.getMacBase64());
-                            break;
-                        case HEXADECIMAL:
-                            f.addFile(file.getName(), mis.getMacHex());
-                            break;
+                this.executor.execute(new Runnable(){
+                    @Override
+                    public void run(){
+                        try(MacInputStream mis = new MacInputStream(new FileInputStream(file), algorithm, key.getBytes())){
+                            mis.readAll();
+                            switch(macOutput){
+                                case BASE64:
+                                    f.addFile(file.getName(), mis.getMacBase64());
+                                    break;
+                                case HEXADECIMAL:
+                                    f.addFile(file.getName(), mis.getMacHex());
+                                    break;
+                            }
+                            incrProcessedFiles();
+                            fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
+                        } catch (IOException | NoSuchAlgorithmException ex) {
+                            Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                            incrEncouredErrors();
+                        }
                     }
-                    this.processedFiles++;
-                    this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
-                } catch (IOException ex) {
-                    Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new MacProcessorException("IO error during the processing.");
-                } catch (NoSuchAlgorithmException ex) {
-                    Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new MacProcessorException("Mac hash calculation error during the processing.");
-                }
+                });
             }
             else if(file.isDirectory()){
                 f.addFolder(initFolder(file));
@@ -116,12 +137,22 @@ public class MacProcessor {
      */
     public void process(){
         this.totalFiles = FileUtils.listFilesAndDirs(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY).size();
+        this.processedFiles = 0;
+        this.encouredErrors = 0;
         
         try {
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.STARTED);
+            this.executor = Executors.newFixedThreadPool(4);
             this.root = this.initFolder(this.dirToScan);
-            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
-        } catch (MacProcessorException ex) {
+            this.executor.shutdown();
+            this.executor.awaitTermination(1, TimeUnit.DAYS);
+            if(this.encouredErrors != 0){
+                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
+            }
+            else{
+                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
+            }
+        } catch (InterruptedException | MacProcessorException ex) {
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
