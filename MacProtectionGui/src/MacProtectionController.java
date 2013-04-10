@@ -52,6 +52,10 @@ public class MacProtectionController implements Initializable {
     private void handleLoadRootAction(ActionEvent event) {
         File dirToScan = this.dirChooser.showDialog(((Node)event.getTarget()).getScene().getWindow());
         this.isProcessing.set(true);
+        this.processorProgress.progressProperty().unbind();
+        this.processorProgress.setProgress(0);
+        this.treeProgress.progressProperty().unbind();
+        this.treeProgress.setProgress(0);
         if(dirToScan != null){
             try {
                 this.rootView.setText(dirToScan.getName());
@@ -140,7 +144,6 @@ public class MacProtectionController implements Initializable {
         algorithms.addAll(MacAlgorithm.getAlgorithms());
         this.choiceAlgorithm.setItems(algorithms);
         this.choiceAlgorithm.setValue(MacAlgorithm.HmacSHA256);
-        this.choiceAlgorithm.setMaxWidth(Double.MAX_VALUE);
         
         this.dirChooser = new DirectoryChooser();
         this.dirChooser.setTitle("Racine du dossier");
