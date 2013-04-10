@@ -4,11 +4,6 @@
  */
 package core.processor.concurrent;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,10 +23,8 @@ public class Worker extends Thread{
         while(true){
             try {
                 Runnable work = this.leader.getRemainingWork().take();
-                System.out.println("Worker " + this.getId() + " start to work.");
                 work.run();
                 this.leader.aWorkIsDone();
-                System.out.println("Worker " + this.getId() + " finished his work.");
                 this.leader.checkRemainingWork();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);

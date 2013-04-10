@@ -42,7 +42,6 @@ public class Leader extends Thread{
     public synchronized void checkRemainingWork(){
         if(this.remainingWorkCount == 0){
             this.isWorking = false;
-            System.out.println("All work is done.");
         }
     }
     
@@ -51,7 +50,6 @@ public class Leader extends Thread{
             throw new LeaderOccupedException();
         }
         this.isWorking = true;
-        System.out.println("New work is requested to the leader.");
         this.remainingWorkCount = work.length;
         for (int i = 0; i < work.length; i++) {
             try {
