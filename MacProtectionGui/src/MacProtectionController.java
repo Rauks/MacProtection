@@ -5,6 +5,7 @@
 
 import core.MacAlgorithm;
 import core.processor.MacProcessor;
+import core.processor.MacProcessorException;
 import core.tree.Folder;
 import java.io.File;
 import java.net.URL;
@@ -47,74 +48,69 @@ public class MacProtectionController implements Initializable {
         Platform.exit();
     }
     
-    private TreeItem<Folder> buildFolderTreeItem(Folder folder){
-        TreeItem<Folder> node = new TreeItem<>();
-        node.setValue(folder);
-        for(Folder f : folder.getSubFolders()){
-            node.getChildren().add(this.buildFolderTreeItem(f));
-        }
-        return node;
-    }
-    
     @FXML
     private void handleLoadRootAction(ActionEvent event) {
         File dirToScan = this.dirChooser.showDialog(((Node)event.getTarget()).getScene().getWindow());
         this.isProcessing.set(true);
         if(dirToScan != null){
-            this.rootView.setText(dirToScan.getName());
-            final MacProcessorTask processor = new MacProcessorTask(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
-            final Thread processorThread = new Thread(processor);
-            this.processorProgress.progressProperty().bind(processor.processProgressProperty());
-            processor.setOnSucceeded(new EventHandler(){
-                @Override
-                public void handle(Event t) {
-                    MacProtectionGui.WORKING_THREADS.remove(processorThread);
-                    try {
-                        Folder result = (Folder) processor.get();
-                        final TreeItemBuildingTask treeBuilder = new TreeItemBuildingTask(result);
-                        final Thread treeBuilderThread = new Thread(treeBuilder);
-                        treeBuilder.setOnSucceeded(new EventHandler(){
-                            @Override
-                            public void handle(Event t) {
-                                MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
-                                try {
-                                    TreeItem<Folder> root = (TreeItem<Folder>) treeBuilder.get();
-                                    System.out.println(root);
-                                    rootNode.set(root);
-                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.INFO, "Done.");
-                                } catch (InterruptedException | ExecutionException ex) {
-                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-                                } finally{
-                                    isProcessing.set(false);
+            try {
+                this.rootView.setText(dirToScan.getName());
+                final MacProcessorTask processor = new MacProcessorTask(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
+                final Thread processorThread = new Thread(processor);
+                this.processorProgress.progressProperty().bind(processor.processProgressProperty());
+                processor.setOnSucceeded(new EventHandler(){
+                    @Override
+                    public void handle(Event t) {
+                        MacProtectionGui.WORKING_THREADS.remove(processorThread);
+                        try {
+                            Folder result = (Folder) processor.get();
+                            final TreeItemBuildingTask treeBuilder = new TreeItemBuildingTask(result);
+                            final Thread treeBuilderThread = new Thread(treeBuilder);
+                            treeBuilder.setOnSucceeded(new EventHandler(){
+                                @Override
+                                public void handle(Event t) {
+                                    MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
+                                    try {
+                                        TreeItem<Folder> root = (TreeItem<Folder>) treeBuilder.get();
+                                        rootNode.set(root);
+                                    } catch (InterruptedException | ExecutionException ex) {
+                                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                                    } finally{
+                                        isProcessing.set(false);
+                                    }
                                 }
-                            }
-                        });
-                        treeBuilder.setOnFailed(new EventHandler(){
-                            @Override
-                            public void handle(Event t) {
-                                MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
-                                isProcessing.set(false);
-                                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
-                            }
-                        });
-                        MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
-                        treeBuilderThread.start();
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-                        isProcessing.set(false);
+                            });
+                            treeBuilder.setOnFailed(new EventHandler(){
+                                @Override
+                                public void handle(Event t) {
+                                    MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
+                                    isProcessing.set(false);
+                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                                }
+                            });
+                            MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
+                            treeBuilderThread.start();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                            isProcessing.set(false);
+                        }
                     }
-                }
-            });
-            processor.setOnFailed(new EventHandler(){
-                @Override
-                public void handle(Event t) {
-                     MacProtectionGui.WORKING_THREADS.remove(processorThread);
-                     isProcessing.set(false);
-                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
-                }
-            });
-            MacProtectionGui.WORKING_THREADS.add(processorThread);
-            processorThread.start();
+                });
+                processor.setOnFailed(new EventHandler(){
+                    @Override
+                    public void handle(Event t) {
+                         MacProtectionGui.WORKING_THREADS.remove(processorThread);
+                         isProcessing.set(false);
+                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
+                    }
+                });
+                MacProtectionGui.WORKING_THREADS.add(processorThread);
+                processorThread.start();
+            } catch (MacProcessorException ex) {
+                this.rootView.setText("");
+                this.isProcessing.set(false);
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else{
             this.rootView.setText("");
