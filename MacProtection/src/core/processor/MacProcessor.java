@@ -142,7 +142,6 @@ public class MacProcessor {
         
         int sysProc = Runtime.getRuntime().availableProcessors();
         sysProc = (sysProc == 1) ? sysProc : (sysProc - 1);
-        System.out.println(sysProc);
         
         try {
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.STARTED);
