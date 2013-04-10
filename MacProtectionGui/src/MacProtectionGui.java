@@ -3,7 +3,12 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,12 +19,25 @@ import javafx.stage.Stage;
  * @author Karl
  */
 public class MacProtectionGui extends Application {
+    public static ArrayList<Thread> WORKING_THREADS = new ArrayList<>();
+    
+    public static void interruptWorkingThread(){
+        for(Iterator<Thread> it = MacProtectionGui.WORKING_THREADS.iterator(); it.hasNext();){
+            it.next().interrupt();
+        }
+    }
     
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("MacProtection.fxml"));
-        
         Scene scene = new Scene(root);
+        stage.setOnCloseRequest(new EventHandler() {
+            @Override
+            public void handle(Event t) {
+                MacProtectionGui.interruptWorkingThread();
+                Platform.exit();
+            }
+        });
         
         stage.setScene(scene);
         stage.show();

@@ -3,12 +3,8 @@
  * and open the template in the editor.
  */
 
-import com.sun.javaws.progress.Progress;
 import core.MacAlgorithm;
 import core.processor.MacProcessor;
-import core.processor.MacProcessorEvent;
-import core.processor.MacProcessorException;
-import core.processor.MacProcessorListener;
 import core.tree.Folder;
 import java.io.File;
 import java.net.URL;
@@ -18,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,9 +40,10 @@ public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
     private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
     private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>(new TreeItem<Folder>());
-    
+        
     @FXML
     private void handleQuitAction(ActionEvent event) {
+        MacProtectionGui.interruptWorkingThread();
         Platform.exit();
     }
     
@@ -67,16 +63,20 @@ public class MacProtectionController implements Initializable {
         if(dirToScan != null){
             this.rootView.setText(dirToScan.getName());
             final MacProcessorTask processor = new MacProcessorTask(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
+            final Thread processorThread = new Thread(processor);
             this.processorProgress.progressProperty().bind(processor.processProgressProperty());
             processor.setOnSucceeded(new EventHandler(){
                 @Override
                 public void handle(Event t) {
+                    MacProtectionGui.WORKING_THREADS.remove(processorThread);
                     try {
                         Folder result = (Folder) processor.get();
                         final TreeItemBuildingTask treeBuilder = new TreeItemBuildingTask(result);
+                        final Thread treeBuilderThread = new Thread(treeBuilder);
                         treeBuilder.setOnSucceeded(new EventHandler(){
                             @Override
                             public void handle(Event t) {
+                                MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
                                 try {
                                     TreeItem<Folder> root = (TreeItem<Folder>) treeBuilder.get();
                                     System.out.println(root);
@@ -92,11 +92,13 @@ public class MacProtectionController implements Initializable {
                         treeBuilder.setOnFailed(new EventHandler(){
                             @Override
                             public void handle(Event t) {
-                                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                                MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
                                 isProcessing.set(false);
+                                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
                             }
                         });
-                        new Thread(treeBuilder).start();
+                        MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
+                        treeBuilderThread.start();
                     } catch (InterruptedException | ExecutionException ex) {
                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
                         isProcessing.set(false);
@@ -106,11 +108,13 @@ public class MacProtectionController implements Initializable {
             processor.setOnFailed(new EventHandler(){
                 @Override
                 public void handle(Event t) {
-                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
+                     MacProtectionGui.WORKING_THREADS.remove(processorThread);
                      isProcessing.set(false);
+                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
                 }
             });
-            new Thread(processor).start();
+            MacProtectionGui.WORKING_THREADS.add(processorThread);
+            processorThread.start();
         }
         else{
             this.rootView.setText("");
@@ -138,6 +142,8 @@ public class MacProtectionController implements Initializable {
         ObservableList<MacAlgorithm> algorithms = FXCollections.observableArrayList();
         algorithms.addAll(MacAlgorithm.getAlgorithms());
         this.choiceAlgorithm.setItems(algorithms);
+        this.choiceAlgorithm.setValue(MacAlgorithm.HmacSHA256);
+        this.choiceAlgorithm.setMaxWidth(Double.MAX_VALUE);
         
         this.dirChooser = new DirectoryChooser();
         this.dirChooser.setTitle("Racine du dossier");
