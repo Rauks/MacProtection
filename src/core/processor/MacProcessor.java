@@ -115,7 +115,7 @@ public class MacProcessor {
      * @warning The process may take some time. Take a cup of cofee !
      */
     public void process(){
-        this.totalFiles = FileUtils.listFiles(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY).size();
+        this.totalFiles = FileUtils.listFilesAndDirs(dirToScan, new RegexFileFilter("^(.*?)"), DirectoryFileFilter.DIRECTORY).size();
         try {
             this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.STARTED);
             this.root = this.initFolder(this.dirToScan);
