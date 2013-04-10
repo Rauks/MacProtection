@@ -6,6 +6,7 @@ package usecase;
 
 import core.MacAlgorithm;
 import core.MacProcessor;
+import core.MacProcessorException;
 import core.check.CheckReader;
 import core.check.CheckReaderMacException;
 import core.check.CheckReaderReadingException;
@@ -30,38 +31,43 @@ public class MacProtection {
         File dirToScan = new File(".");
         String key = "testKey";
         MacAlgorithm algorithm = MacAlgorithm.HmacSHA256;
-        
-        //Processing a physical repertory
-        MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.HEXADECIMAL);
-        p.process();
-        Folder physicalRoot = p.getResult();
-        
-        System.out.println(physicalRoot);
-        
-        //Creation of check file for the folder
+            
         try {
-            System.out.println("WRITING CHECK FILE...");
-            CheckWriter cw = new CheckWriter(new FileOutputStream(new File("check.test")), physicalRoot, algorithm, key);
-            cw.write();
-            System.out.println("DONE.");
-        } catch (FileNotFoundException ex) {
+            //Processing a physical repertory
+            MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.HEXADECIMAL);
+            p.process();
+            Folder physicalRoot = p.getResult();
+            
+            System.out.println(physicalRoot);
+            
+            //Creation of check file for the folder
+            try {
+                System.out.println("WRITING CHECK FILE...");
+                CheckWriter cw = new CheckWriter(new FileOutputStream(new File("check.test")), physicalRoot, algorithm, key);
+                cw.write();
+                System.out.println("DONE.");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //Get a folder tree from the validation file
+            Folder validationFolder = null;
+            try {
+                System.out.println("READING CHECK FILE...");
+                CheckReader cr = new CheckReader(new FileInputStream(new File("check.test")), algorithm, key);
+                cr.read();
+                validationFolder = cr.getRootFolder();
+                System.out.println("DONE.");
+            } catch (CheckReaderMacException | CheckReaderReadingException | FileNotFoundException ex) {
+                Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //Physical directory validation
+            System.out.println("VALIDATION RESULT : ");
+            System.out.println(physicalRoot.isConformTo(validationFolder));
+            
+        } catch (MacProcessorException ex) {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //Get a folder tree from the validation file
-        Folder validationFolder = null;
-        try {
-            System.out.println("READING CHECK FILE...");
-            CheckReader cr = new CheckReader(new FileInputStream(new File("check.test")), algorithm, key);
-            cr.read();
-            validationFolder = cr.getRootFolder();
-            System.out.println("DONE.");
-        } catch (CheckReaderMacException | CheckReaderReadingException | FileNotFoundException ex) {
-            Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Physical directory validation
-        System.out.println("VALIDATION RESULT : ");
-        System.out.println(physicalRoot.isConformTo(validationFolder));
     }
 }

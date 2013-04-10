@@ -44,7 +44,10 @@ public class MacProcessor {
      * @see MacAlgorithm
      * @see MacOutput
      */
-    public MacProcessor(File dirToScan, MacAlgorithm algorithm, String key, MacOutput macOutput){
+    public MacProcessor(File dirToScan, MacAlgorithm algorithm, String key, MacOutput macOutput) throws MacProcessorException{
+        if(!dirToScan.isDirectory()){
+            throw new MacProcessorException("The folder to scan is not a folder.");
+        }
         this.dirToScan = dirToScan;
         this.algorithm = algorithm;
         this.key = key;
