@@ -5,10 +5,9 @@
 package core.tree;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Used to represent a folder structure. The folders can have sub-folders and files.
@@ -22,7 +21,7 @@ public class Folder implements Serializable{
     private static final long serialVersionUID = 1L;
     
     private HashSet<Folder> folders;
-    private HashMap<String, String> files;
+    private HashSet<HashedFile> files;
     
     private String name;
     
@@ -34,11 +33,11 @@ public class Folder implements Serializable{
     public Folder(String name){
         this.name = name;
         this.folders = new HashSet<>();
-        this.files = new HashMap<>();
+        this.files = new HashSet<>();
     }
     
     /**
-     * Add a sub-folder into the folder;
+     * Add a sub-folder into the folder.
      * 
      * @param folder The sub-folder to add. 
      */
@@ -47,13 +46,12 @@ public class Folder implements Serializable{
     }
     
     /**
-     * Add a file into the folder
+     * Add a {@link HashedFile} into the folder.
      * 
-     * @param name The name of the file to add.
-     * @param hash The hash of the file.
+     * @param file The HashedFile to add.
      */
-    public void addFile(String name, String hash){
-        this.files.put(name, hash);
+    public void addFile(HashedFile file){
+        this.files.add(file);
     }
     
     /**
@@ -63,7 +61,13 @@ public class Folder implements Serializable{
      * @return The hash of the file or {@code null} if there is no file with this name.
      */
     public String getHash(String name){
-        return this.files.get(name);
+        for(Iterator<HashedFile> it = this.getFiles().iterator(); it.hasNext();){
+            HashedFile f = it.next();
+            if(f.getName().equals(name)){
+                return f.getHash();
+            }
+        }
+        return null;
     }
     
     /**
@@ -71,8 +75,9 @@ public class Folder implements Serializable{
      * 
      * @warning Return only the files of the folder, to get the files of the sub-folders recurcively see {@link #getAllFiles}.
      * @return The files.
+     * @see HashedFile
      */
-    public HashMap<String, String> getFiles(){
+    public HashSet<HashedFile> getFiles(){
         return this.files;
     }
     
@@ -81,12 +86,13 @@ public class Folder implements Serializable{
      * 
      * @warning Return all the files recurcively, to get only the files of the folder and not of the sub-folders see {@link #getFiles}.
      * @return The files.
+     * @see HashedFile
      */
-    public HashMap<String, String> getAllFiles(){
-        HashMap<String, String> out = new HashMap<>();
-        out.putAll(this.getFiles());
+    public HashSet<HashedFile> getAllFiles(){
+        HashSet<HashedFile> out = new HashSet<>();
+        out.addAll(this.getFiles());
         for(Iterator<Folder> it = this.getSubFolders().iterator(); it.hasNext();){
-            out.putAll(it.next().getAllFiles());
+            out.addAll(it.next().getAllFiles());
         }
         return out;
     }
@@ -151,36 +157,7 @@ public class Folder implements Serializable{
      * @return {@code true} if the current folder is conform.
      */
     public boolean isConformTo(Folder other){
-        //Same folder name
-        if(!this.getName().equals(other.getName())){
-            return false;
-        }
-        //Same number of files
-        if(this.getFiles().size() != other.getFiles().size()){
-            return false;
-        }
-        //Same number of sub-folders
-        if(this.getSubFolders().size() != other.getSubFolders().size()){
-            return false;
-        }
-        //Same files hashs
-        for(Iterator<Entry<String, String>> it = other.getFiles().entrySet().iterator(); it.hasNext();){
-            Entry<String, String> oFile = it.next();
-            String oHash = oFile.getValue();
-            String oName = oFile.getKey();
-            if(this.getHash(oName) == null || !this.getHash(oName).equals(oHash)){
-                return false;
-            }
-        }
-        //Sub-folders conformity
-        for(Iterator<Folder> it = this.getSubFolders().iterator(); it.hasNext();){
-            Folder oFolder = it.next();
-            String oName = oFolder.getName();
-            if(this.getSubFolder(oName) == null || !this.getSubFolder(oName).isConformTo(oFolder)){
-                return false;
-            }
-        }
-        return true;
+        return this.equals(other);
     }
     
     /**
@@ -191,5 +168,45 @@ public class Folder implements Serializable{
     @Override
     public String toString(){
         return this.name;
+    }
+    /**
+     * Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by {@link HashMap}.
+     * <p/>
+     * Two Folders with the same {@code name} will have the same hashCode.
+     * 
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.name);
+    }
+    
+    /**
+     * Indicates whether some other object is "equal to" this one. 
+     * To be equals, the folder structure must be the same between the current folder and the {@code other}, 
+     * the contained files and sub-folders must be equals to.
+     * 
+     * @param obj The reference object with which to compare.
+     * @return {true} if the objetcs are "equals".
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Folder other = (Folder) obj;
+        if (!Objects.equals(this.folders, other.folders)) {
+            return false;
+        }
+        if (!Objects.equals(this.files, other.files)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
     }
 }

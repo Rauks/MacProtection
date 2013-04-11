@@ -7,6 +7,7 @@ package core.processor;
 import core.MacAlgorithm;
 import core.MacInputStream;
 import core.tree.Folder;
+import core.tree.HashedFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -108,10 +109,10 @@ public class MacProcessor {
                             mis.readAll();
                             switch(macOutput){
                                 case BASE64:
-                                    f.addFile(file.getName(), mis.getMacBase64());
+                                    f.addFile(new HashedFile(file.getName(), mis.getMacBase64()));
                                     break;
                                 case HEXADECIMAL:
-                                    f.addFile(file.getName(), mis.getMacHex());
+                                    f.addFile(new HashedFile(file.getName(), mis.getMacHex()));
                                     break;
                             }
                             incrProcessedFiles();
