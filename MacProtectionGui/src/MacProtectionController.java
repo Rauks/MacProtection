@@ -7,8 +7,12 @@ import core.MacAlgorithm;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
+import core.tree.HashedFile;
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -16,8 +20,11 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -26,12 +33,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
+import tree.ObservableHashedFile;
 
 /**
  *
@@ -41,11 +53,21 @@ public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
     private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
     private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>();
+    private ObservableList<ObservableHashedFile> filesList = FXCollections.observableArrayList();
         
     @FXML
     private void handleQuitAction(ActionEvent event) {
         MacProtectionGui.interruptWorkingThread();
         Platform.exit();
+    }
+    
+    @FXML
+    private void handleRootViewFolderSelected(Folder folder){
+        this.filesList.clear();
+        for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
+            HashedFile file = it.next();
+            this.filesList.add(new ObservableHashedFile(file.getName(), file.getHash()));
+        }
     }
     
     @FXML
@@ -137,6 +159,12 @@ public class MacProtectionController implements Initializable {
     private ProgressBar processorProgress;
     @FXML
     private ProgressBar treeProgress;
+    @FXML
+    private TableView filesTable;
+    @FXML
+    private TableColumn filesColomn;
+    @FXML
+    private TableColumn hashsColumn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -150,14 +178,29 @@ public class MacProtectionController implements Initializable {
         
         this.choiceAlgorithm.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.choicePassword.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
+        this.processorProgress.disableProperty().bind(this.isProcessing.getReadOnlyProperty().not());
+        this.treeProgress.disableProperty().bind(this.isProcessing.getReadOnlyProperty().not());
         this.choiceRoot.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.choiceAlgorithm.valueProperty().isNull())
                                             .or(this.choicePassword.textProperty().isEqualTo("")));
         this.rootView.disableProperty().bind(this.treeView.rootProperty().isNull());
+        this.filesTable.disableProperty().bind(this.treeView.rootProperty().isNull());
         this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.treeView.rootProperty().isNull()));
         
         this.treeView.rootProperty().bind(this.rootNode);
+        this.treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                TreeItem<Folder> selectedItem = (TreeItem<Folder>) newValue;
+                handleRootViewFolderSelected(selectedItem.getValue());
+            }
+        });
+        
+        this.filesColomn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
+        this.hashsColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("hash"));
+        this.filesTable.setItems(this.filesList);
+        this.filesTable.setPlaceholder(new Label("Dossier vide."));
         
         Platform.runLater(new Runnable(){
             @Override

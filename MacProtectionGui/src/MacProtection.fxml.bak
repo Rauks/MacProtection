@@ -8,11 +8,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml" fx:controller="MacProtectionController">
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="750.0" xmlns:fx="http://javafx.com/fxml" fx:controller="MacProtectionController">
   <children>
     <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <center>
-        <SplitPane dividerPositions="0.4104938271604938" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
+        <SplitPane dividerPositions="0.42245989304812837" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
           <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
               <children>
@@ -61,6 +61,12 @@
                         </HBox>
                       </children>
                     </VBox>
+                    <ProgressBar fx:id="processorProgress" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="5.0" progress="0.0">
+                      <VBox.margin>
+                        <Insets fx:id="x1" />
+                      </VBox.margin>
+                    </ProgressBar>
+                    <ProgressBar id="processorProgress" fx:id="treeProgress" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="5.0" progress="0.0" VBox.margin="$x1" />
                     <TreeView fx:id="treeView" prefHeight="200.0" VBox.vgrow="ALWAYS" />
                   </children>
                   <padding>
@@ -71,16 +77,12 @@
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
               <children>
-                <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.5" AnchorPane.rightAnchor="9.5" AnchorPane.topAnchor="0.0">
-                  <children>
-                    <VBox id="VBox" alignment="CENTER" spacing="5.0" HBox.hgrow="NEVER">
-                      <children>
-                        <ProgressBar fx:id="processorProgress" prefWidth="300.0" progress="0.0" />
-                        <ProgressBar id="processorProgress" fx:id="treeProgress" prefWidth="300.0" progress="0.0" />
-                      </children>
-                    </VBox>
-                  </children>
-                </HBox>
+                <TableView fx:id="filesTable" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                  <columns>
+                    <TableColumn prefWidth="200.0" text="Fichier" fx:id="filesColomn" />
+                    <TableColumn prefWidth="200.0" text="Hash Mac" fx:id="hashsColumn" />
+                  </columns>
+                </TableView>
               </children>
             </AnchorPane>
           </items>
