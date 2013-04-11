@@ -22,7 +22,7 @@
                       <children>
                         <Label text="Algorithme :">
                           <labelFor>
-                            <ChoiceBox fx:id="choiceAlgorithm">
+                            <ChoiceBox fx:id="choiceAlgorithm" maxWidth="1.7976931348623157E308">
                               <items>
                                 <FXCollections fx:factory="observableArrayList">
                                   <String fx:value="Item 1" />
@@ -50,7 +50,7 @@
                       <children>
                         <Label text="Racine du dossier :">
                           <labelFor>
-                            <Button fx:id="choiceRoot" mnemonicParsing="false" onAction="#handleLoadRootAction" text="Parcourir..." />
+                            <Button fx:id="choiceRoot" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleLoadRootAction" prefWidth="80.0" text="Parcourir..." />
                           </labelFor>
                         </Label>
                         <HBox alignment="CENTER_RIGHT" spacing="5.0">
