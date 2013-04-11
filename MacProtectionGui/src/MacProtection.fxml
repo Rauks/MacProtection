@@ -12,7 +12,7 @@
   <children>
     <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <center>
-        <SplitPane dividerPositions="0.42245989304812837" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
+        <SplitPane dividerPositions="0.2994652406417112" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
           <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
               <children>
@@ -89,7 +89,7 @@
                         <TableView fx:id="filesTable" VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn prefWidth="200.0" text="Fichier" fx:id="filesColomn" />
-                            <TableColumn prefWidth="200.0" text="Hash Mac" fx:id="hashsColumn" />
+                            <TableColumn prefWidth="300.0" text="Hash Mac" fx:id="hashsColumn" />
                           </columns>
                         </TableView>
                       </labelFor>

@@ -200,7 +200,7 @@ public class MacProtectionController implements Initializable {
         this.filesColomn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
         this.hashsColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("hash"));
         this.filesTable.setItems(this.filesList);
-        this.filesTable.setPlaceholder(new Label("Dossier vide."));
+        this.filesTable.setPlaceholder(new Label("Aucun fichier dans ce dossier"));
         
         Platform.runLater(new Runnable(){
             @Override
