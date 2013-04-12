@@ -45,6 +45,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -227,6 +228,8 @@ public class MacProtectionController implements Initializable {
     @FXML
     private ProgressBar treeProgress;
     @FXML
+    private ProgressIndicator workingIndicator;
+    @FXML
     private TableView filesTable;
     @FXML
     private TableColumn filesColumn;
@@ -258,15 +261,20 @@ public class MacProtectionController implements Initializable {
         this.choicePassword.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.processorProgress.disableProperty().bind(this.isProcessing.getReadOnlyProperty().not());
         this.treeProgress.disableProperty().bind(this.isProcessing.getReadOnlyProperty().not());
+        this.workingIndicator.visibleProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.choiceRoot.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.choiceAlgorithm.valueProperty().isNull())
                                             .or(this.choicePassword.textProperty().isEqualTo("")));
-        this.rootView.disableProperty().bind(this.treeView.rootProperty().isNull());
-        this.filesTable.disableProperty().bind(this.treeView.rootProperty().isNull());
+        this.rootView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.treeView.rootProperty().isNull()));
+        this.filesTable.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.treeView.rootProperty().isNull()));
         this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.treeView.rootProperty().isNull()));
-        this.menuCheckCreation.disableProperty().bind(this.treeView.rootProperty().isNull());
-        this.menuCheckRead.disableProperty().bind(this.treeView.rootProperty().isNull());
+        this.menuCheckCreation.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.treeView.rootProperty().isNull()));
+        this.menuCheckRead.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
+                                            .or(this.treeView.rootProperty().isNull()));
         
         //Folders tree bindings
         this.treeView.rootProperty().bind(this.rootNode);
