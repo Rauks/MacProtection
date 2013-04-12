@@ -58,7 +58,6 @@ public class MacProtectionController implements Initializable {
         Platform.exit();
     }
     
-    @FXML
     private void handleRootViewFolderSelected(Folder folder){
         this.filesList.clear();
         for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){

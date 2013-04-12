@@ -17,25 +17,27 @@ public class HashedFile implements Serializable{
     
     private String name;
     private String hash;
+    private long size;
 
     /**
-     * Create a {@code HashedFile} with a {@code name} and his {@code hash}.
+     * Create a {@code HashedFile} with a {@code name}, his {@code hash} and his {@code size}.
      * 
      * @param name The name of the file.
      * @param hash The hash of the file.
      */
-    public HashedFile(String name, String hash) {
+    public HashedFile(String name, String hash, long size) {
         this.name = name;
         this.hash = hash;
+        this.size = size;
     }
 
     /**
-     * Create a {@code HashedFile} with a {@code name} only, the hash will be {@code null}.
+     * Create a {@code HashedFile} with a {@code name} and his {@code size}, the hash will be {@code null}.
      * 
      * @param name The name of the file.
      */
-    public HashedFile(String name) {
-        this(name, null);
+    public HashedFile(String name, long size) {
+        this(name, null, size);
     }
     
     /**
@@ -45,6 +47,15 @@ public class HashedFile implements Serializable{
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Return the size of this {@code HashedFile}.
+     * 
+     * @return The size of this file.
+     */
+    public double getSize() {
+        return size;
     }
 
     /**
@@ -63,6 +74,15 @@ public class HashedFile implements Serializable{
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Change the size of this {@code HashedFile}.
+     * 
+     * @param size The new size.
+     */
+    public void setName(long size) {
+        this.size = size;
     }
     
     /**
