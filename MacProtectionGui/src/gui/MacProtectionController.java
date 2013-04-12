@@ -99,12 +99,13 @@ public class MacProtectionController implements Initializable {
     @FXML
     private void handleCheckFileCreation(ActionEvent event){
         File fileToSave = this.fileChooser.showSaveDialog(this.getScene().getWindow());
-        CheckWriter cw;
-        try {
-            cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.getValue().getValue(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
-            cw.write();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+        if(fileToSave != null){
+            try {
+                CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.getValue().getValue(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+                cw.write();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -244,7 +245,8 @@ public class MacProtectionController implements Initializable {
         
         this.dirChooser = new DirectoryChooser();
         this.fileChooser = new FileChooser();
-        this.fileChooser.getExtensionFilters().add(new ExtensionFilter(".checkmac"));
+        this.fileChooser.getExtensionFilters().add(new ExtensionFilter("Fichier de vérification Mac", "*.checkmac"));
+        this.fileChooser.getExtensionFilters().add(new ExtensionFilter("Autres fichiers", "*"));
         
         //Menu accelerators
         this.menuCheckCreation.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
