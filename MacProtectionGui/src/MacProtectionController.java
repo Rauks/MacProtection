@@ -10,8 +10,6 @@ import core.tree.Folder;
 import core.tree.HashedFile;
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +22,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -192,8 +189,13 @@ public class MacProtectionController implements Initializable {
         this.treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                TreeItem<Folder> selectedItem = (TreeItem<Folder>) newValue;
-                handleRootViewFolderSelected(selectedItem.getValue());
+                if(newValue != null){
+                    TreeItem<Folder> selectedItem = (TreeItem<Folder>) newValue;
+                    handleRootViewFolderSelected(selectedItem.getValue());
+                }
+                else{
+                    filesList.clear();
+                }
             }
         });
         
