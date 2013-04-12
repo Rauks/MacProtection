@@ -1,3 +1,5 @@
+package gui;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -40,7 +42,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
-import tree.ObservableHashedFile;
+import gui.ObservableHashedFile;
 
 /**
  *

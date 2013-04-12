@@ -1,3 +1,5 @@
+package gui;
+
 
 import core.processor.MacProcessor;
 import core.tree.Folder;

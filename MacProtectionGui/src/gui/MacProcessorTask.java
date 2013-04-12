@@ -1,3 +1,5 @@
+package gui;
+
 
 import core.MacAlgorithm;
 import core.processor.MacProcessor;
