@@ -42,7 +42,12 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
-import gui.ObservableHashedFile;
+import gui.tree.ObservableHashedFile;
+import java.text.Collator;
+import java.text.DecimalFormat;
+import java.util.Comparator;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.util.Callback;
 
 /**
  *
@@ -64,7 +69,7 @@ public class MacProtectionController implements Initializable {
         this.filesList.clear();
         for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
             HashedFile file = it.next();
-            this.filesList.add(new ObservableHashedFile(file.getName(), file.getHash()));
+            this.filesList.add(new ObservableHashedFile(file));
         }
     }
     
@@ -72,6 +77,7 @@ public class MacProtectionController implements Initializable {
     private void handleLoadRootAction(ActionEvent event) {
         File dirToScan = this.dirChooser.showDialog(((Node)event.getTarget()).getScene().getWindow());
         this.isProcessing.set(true);
+        this.rootNode.set(null);
         this.processorProgress.progressProperty().unbind();
         this.processorProgress.setProgress(0);
         this.treeProgress.progressProperty().unbind();
@@ -160,9 +166,11 @@ public class MacProtectionController implements Initializable {
     @FXML
     private TableView filesTable;
     @FXML
-    private TableColumn filesColomn;
+    private TableColumn filesColumn;
     @FXML
     private TableColumn hashsColumn;
+    @FXML
+    private TableColumn sizesColumn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -200,8 +208,64 @@ public class MacProtectionController implements Initializable {
             }
         });
         
-        this.filesColomn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
+        this.filesColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
         this.hashsColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("hash"));
+        this.sizesColumn.setCellValueFactory(
+            new Callback<TableColumn.CellDataFeatures<ObservableHashedFile, String>, ObservableValue<String>>() {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableHashedFile, String> p) {
+                    long size = p.getValue().getSize();
+                    DecimalFormat df = new DecimalFormat();
+                    df.setMaximumFractionDigits(2);
+                    df.setMinimumFractionDigits(0); 
+                    if (size < 1024) {
+                        return new SimpleStringProperty(size + " o");
+                    } 
+                    else if (size >= 1024 && size < 1048576){
+                        return new SimpleStringProperty(df.format((double)size / 1024d) + " Ko");
+                    }
+                    else if (size >= 1048576 && size < 1073741824){
+                        return new SimpleStringProperty(df.format((double)size / 1048576d) + " Mo");
+                    }
+                    else{
+                        return new SimpleStringProperty(df.format((double)size / 1073741824d) + " Go");
+                    }
+                }
+            });
+        this.sizesColumn.setComparator(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                String o1u = o1.substring(o1.length() - 2, o1.length());
+                String o2u = o2.substring(o2.length() - 2, o2.length());
+                if(o1u.equals(o2u)){
+                    return Collator.getInstance().compare(o1, o2);
+                }
+                else{
+                    switch(o1u){
+                        case " o":
+                            return -1;
+                        case "Ko":
+                            if(o2u.equals(" o")){
+                                return 1;
+                            }
+                            else{
+                                return -1;
+                            }
+                        case "Mo":
+                            if(o2u.equals(" o") || o2u.equals("Ko")){
+                                return 1;
+                            }
+                            else{
+                                return -1;
+                            }
+                        case "Go":
+                            return 1;
+                        default:
+                            return 0;
+                    }
+                }
+            }
+        });
         this.filesTable.setItems(this.filesList);
         this.filesTable.setPlaceholder(new Label("Aucun fichier dans ce dossier"));
         

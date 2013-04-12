@@ -54,7 +54,7 @@ public class HashedFile implements Serializable{
      * 
      * @return The size of this file.
      */
-    public double getSize() {
+    public long getSize() {
         return size;
     }
 
