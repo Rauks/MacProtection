@@ -1,4 +1,4 @@
-package gui;
+package gui.task;
 
 
 import core.MacAlgorithm;
