@@ -341,10 +341,22 @@ public class MacProtectionController implements Initializable {
         this.sizesColumn.setComparator(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
-                String o1u = o1.substring(o1.length() - 2, o1.length());
-                String o2u = o2.substring(o2.length() - 2, o2.length());
+                String o1u = o1.substring(o1.length() - 2);
+                String o2u = o2.substring(o2.length() - 2);
                 if(o1u.equals(o2u)){
-                    return Collator.getInstance().compare(o1, o2);
+                    String o1c;
+                    String o2c;
+                    if(o1u.equals(" o")){
+                        o1c = o1.substring(0, o1.length() - 2);
+                        o2c = o2.substring(0, o2.length() - 2);
+                    }
+                    else{ //Ko Mo Go
+                        o1c = o1.substring(0, o1.length() - 3);
+                        o2c = o2.substring(0, o2.length() - 3);
+                    }
+                    o1c = o1c.replace(',', '.');
+                    o2c = o2c.replace(',', '.');
+                    return Double.compare(Double.parseDouble(o1c), Double.parseDouble(o2c));
                 }
                 else{
                     switch(o1u){
