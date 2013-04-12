@@ -103,10 +103,7 @@ public class HashedFile implements Serializable{
      */
     @Override
     public int hashCode() {
-        int tempHash = 5;
-        tempHash = 59 * tempHash + Objects.hashCode(this.name);
-        tempHash = 59 * tempHash + Objects.hashCode(this.hash);
-        return tempHash;
+        return Objects.hashCode(this.name);
     }
 
     /**
@@ -128,6 +125,9 @@ public class HashedFile implements Serializable{
             return false;
         }
         if (!Objects.equals(this.hash, other.hash)) {
+            return false;
+        }
+        if (!Objects.equals(this.size, other.size)) {
             return false;
         }
         return true;

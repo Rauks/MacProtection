@@ -55,16 +55,16 @@ public class Folder implements Serializable{
     }
     
     /**
-     * Get the hash of a file by his name.
+     * Get a file of this folder by his name.
      * 
      * @param name The name of the file.
-     * @return The hash of the file or {@code null} if there is no file with this name.
+     * @return The file or {@code null} if there is no file with this name.
      */
-    public String getHash(String name){
+    public HashedFile getFile(String name){
         for(Iterator<HashedFile> it = this.getFiles().iterator(); it.hasNext();){
             HashedFile f = it.next();
             if(f.getName().equals(name)){
-                return f.getHash();
+                return f;
             }
         }
         return null;
