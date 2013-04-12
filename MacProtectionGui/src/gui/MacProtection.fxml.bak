@@ -90,7 +90,7 @@
                           <columns>
                             <TableColumn prefWidth="200.0" text="Fichier" fx:id="filesColumn" />
                             <TableColumn prefWidth="300.0" text="Hash Mac" fx:id="hashsColumn" />
-                            <TableColumn prefWidth="100.0" text="Taille" fx:id="sizesColumn" />
+                            <TableColumn prefWidth="100.0" style="" text="Taille" fx:id="sizesColumn" />
                           </columns>
                         </TableView>
                       </labelFor>
@@ -108,6 +108,9 @@
           <menus>
             <Menu mnemonicParsing="false" text="Fichier">
               <items>
+                <MenuItem mnemonicParsing="false" text="Créer un fichier de validation" />
+                <MenuItem mnemonicParsing="false" text="Valider la racine" />
+                <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" />
               </items>
             </Menu>

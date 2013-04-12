@@ -47,6 +47,9 @@ import java.text.Collator;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Pos;
+import javafx.scene.control.TableCell;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 /**
@@ -174,6 +177,7 @@ public class MacProtectionController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //User choices
         ObservableList<MacAlgorithm> algorithms = FXCollections.observableArrayList();
         algorithms.addAll(MacAlgorithm.getAlgorithms());
         this.choiceAlgorithm.setItems(algorithms);
@@ -182,6 +186,7 @@ public class MacProtectionController implements Initializable {
         this.dirChooser = new DirectoryChooser();
         this.dirChooser.setTitle("Racine du dossier");
         
+        //Gui disable bindings
         this.choiceAlgorithm.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.choicePassword.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
         this.processorProgress.disableProperty().bind(this.isProcessing.getReadOnlyProperty().not());
@@ -194,6 +199,7 @@ public class MacProtectionController implements Initializable {
         this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.treeView.rootProperty().isNull()));
         
+        //Folders tree bindings
         this.treeView.rootProperty().bind(this.rootNode);
         this.treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
             @Override
@@ -208,10 +214,25 @@ public class MacProtectionController implements Initializable {
             }
         });
         
+        //Files table bindings
         this.filesColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
         this.hashsColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("hash"));
-        this.sizesColumn.setCellValueFactory(
-            new Callback<TableColumn.CellDataFeatures<ObservableHashedFile, String>, ObservableValue<String>>() {
+        this.hashsColumn.setCellFactory(new Callback<TableColumn, TableCell>() {
+            @Override
+            public TableCell call(TableColumn param) {
+                return new TableCell<ObservableHashedFile, String>() {
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            this.setTextFill(Color.GREEN);
+                            setText(item);
+                        }
+                    }
+                };
+            }
+        });
+        this.sizesColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ObservableHashedFile, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<ObservableHashedFile, String> p) {
                     long size = p.getValue().getSize();
@@ -232,6 +253,22 @@ public class MacProtectionController implements Initializable {
                     }
                 }
             });
+        this.sizesColumn.setCellFactory(new Callback<TableColumn, TableCell>() {
+            @Override
+            public TableCell call(TableColumn param) {
+                TableCell<ObservableHashedFile, String> cell = new TableCell<ObservableHashedFile, String>() {
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            setText(item);
+                        }
+                    }
+                };
+                cell.setAlignment(Pos.CENTER_RIGHT);
+                return cell;
+            }
+        });
         this.sizesColumn.setComparator(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -269,6 +306,7 @@ public class MacProtectionController implements Initializable {
         this.filesTable.setItems(this.filesList);
         this.filesTable.setPlaceholder(new Label("Aucun fichier dans ce dossier"));
         
+        //Password autofocus
         Platform.runLater(new Runnable(){
             @Override
             public void run() {
