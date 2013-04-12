@@ -5,6 +5,8 @@ package gui;
  * and open the template in the editor.
  */
 
+import gui.task.TreeItemBuildingTask;
+import gui.task.MacProcessorTask;
 import core.MacAlgorithm;
 import core.check.CheckWriter;
 import core.processor.MacProcessor;

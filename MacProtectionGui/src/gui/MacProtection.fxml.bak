@@ -6,6 +6,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane id="AnchorPane" fx:id="mainPane" prefHeight="500.0" prefWidth="890.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.MacProtectionController">
@@ -113,10 +114,34 @@
           <menus>
             <Menu mnemonicParsing="false" text="Fichier">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleCheckFileCreation" text="Créer un fichier de validation" fx:id="menuCheckCreation" />
-                <MenuItem mnemonicParsing="false" text="Valider la racine" fx:id="menuCheckRead" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCheckFileCreation" text="Créer un fichier de validation" fx:id="menuCheckCreation">
+                  <graphic>
+                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                        <Image url="@res/menuCheckWrite.png" preserveRatio="false" smooth="false" />
+                      </image>
+                    </ImageView>
+                  </graphic>
+                </MenuItem>
+                <MenuItem mnemonicParsing="false" text="Valider la racine" fx:id="menuCheckRead">
+                  <graphic>
+                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                        <Image url="@res/menuCheckRead.png" preserveRatio="false" smooth="false" />
+                      </image>
+                    </ImageView>
+                  </graphic>
+                </MenuItem>
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" fx:id="menuQuit" />
+                <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" fx:id="menuQuit">
+                  <graphic>
+                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                        <Image url="@res/menuQuit.png" preserveRatio="false" smooth="false" />
+                      </image>
+                    </ImageView>
+                  </graphic>
+                </MenuItem>
               </items>
             </Menu>
           </menus>
