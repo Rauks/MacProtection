@@ -6,12 +6,19 @@ package gui;
  */
 
 import core.MacAlgorithm;
+import core.check.CheckWriter;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import core.tree.HashedFile;
+import gui.tree.ObservableHashedFile;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.URL;
+import java.text.Collator;
+import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +27,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -29,27 +37,27 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.DirectoryChooser;
-import gui.tree.ObservableHashedFile;
-import java.text.Collator;
-import java.text.DecimalFormat;
-import java.util.Comparator;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Pos;
-import javafx.scene.control.TableCell;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
 
 /**
@@ -58,16 +66,53 @@ import javafx.util.Callback;
  */
 public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
+    private FileChooser fileChooser;
     private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
     private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>();
     private ObservableList<ObservableHashedFile> filesList = FXCollections.observableArrayList();
-        
+    
+    /**
+     * Return the scene of this
+     * 
+     * @return 
+     */
+    private Scene getScene(){
+        return this.mainPane.getScene();
+    }
+    
+    /**
+     * Handle a quit action. Will exit the application and all the registered working thread will be interrupted.
+     * 
+     * @param event The {@link ActionEvent} associated. 
+     */
     @FXML
     private void handleQuitAction(ActionEvent event) {
         MacProtectionGui.interruptWorkingThread();
         Platform.exit();
     }
     
+    /**
+     * Create a check file.
+     * 
+     * @param event The {@link ActionEvent} associated. 
+     */
+    @FXML
+    private void handleCheckFileCreation(ActionEvent event){
+        File fileToSave = this.fileChooser.showSaveDialog(this.getScene().getWindow());
+        CheckWriter cw;
+        try {
+            cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.getValue().getValue(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+            cw.write();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Change the files view to show the files of {@code folder}. 
+     * 
+     * @param folder The folder selected.
+     */
     private void handleRootViewFolderSelected(Folder folder){
         this.filesList.clear();
         for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
@@ -76,9 +121,15 @@ public class MacProtectionController implements Initializable {
         }
     }
     
+    /**
+     * Handle a root loading action. A new root folder tree will be builded.
+     * 
+     * @param event The {@link ActionEvent} associated. 
+     */
     @FXML
     private void handleLoadRootAction(ActionEvent event) {
-        File dirToScan = this.dirChooser.showDialog(((Node)event.getTarget()).getScene().getWindow());
+        this.dirChooser.setTitle("Racine du dossier");
+        File dirToScan = this.dirChooser.showDialog(this.getScene().getWindow());
         this.isProcessing.set(true);
         this.rootNode.set(null);
         this.processorProgress.progressProperty().unbind();
@@ -153,6 +204,14 @@ public class MacProtectionController implements Initializable {
     }
     
     @FXML
+    private AnchorPane mainPane;
+    @FXML
+    private MenuItem menuCheckCreation;
+    @FXML
+    private MenuItem menuCheckRead;
+    @FXML
+    private MenuItem menuQuit;
+    @FXML
     private ChoiceBox<MacAlgorithm> choiceAlgorithm;
     @FXML
     private PasswordField choicePassword;
@@ -184,7 +243,13 @@ public class MacProtectionController implements Initializable {
         this.choiceAlgorithm.setValue(MacAlgorithm.HmacSHA256);
         
         this.dirChooser = new DirectoryChooser();
-        this.dirChooser.setTitle("Racine du dossier");
+        this.fileChooser = new FileChooser();
+        this.fileChooser.getExtensionFilters().add(new ExtensionFilter(".checkmac"));
+        
+        //Menu accelerators
+        this.menuCheckCreation.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+        this.menuCheckRead.setAccelerator(KeyCombination.keyCombination("Ctrl+T"));
+        this.menuQuit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
         
         //Gui disable bindings
         this.choiceAlgorithm.disableProperty().bind(this.isProcessing.getReadOnlyProperty());
@@ -198,6 +263,8 @@ public class MacProtectionController implements Initializable {
         this.filesTable.disableProperty().bind(this.treeView.rootProperty().isNull());
         this.treeView.disableProperty().bind(this.isProcessing.getReadOnlyProperty()
                                             .or(this.treeView.rootProperty().isNull()));
+        this.menuCheckCreation.disableProperty().bind(this.treeView.rootProperty().isNull());
+        this.menuCheckRead.disableProperty().bind(this.treeView.rootProperty().isNull());
         
         //Folders tree bindings
         this.treeView.rootProperty().bind(this.rootNode);

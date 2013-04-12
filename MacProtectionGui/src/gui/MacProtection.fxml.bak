@@ -8,11 +8,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="890.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.MacProtectionController">
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.MacProtectionController">
   <children>
     <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <center>
-        <SplitPane dividerPositions="0.29954954954954954" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
+        <SplitPane dividerPositions="0.30178173719376394" focusTraversable="true" prefHeight="160.0" prefWidth="200.0">
           <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
               <children>
@@ -108,10 +108,10 @@
           <menus>
             <Menu mnemonicParsing="false" text="Fichier">
               <items>
-                <MenuItem mnemonicParsing="false" text="Créer un fichier de validation" />
-                <MenuItem mnemonicParsing="false" text="Valider la racine" />
+                <MenuItem mnemonicParsing="false" onAction="#handleCheckFileCreation" text="Créer un fichier de validation" fx:id="menuCheckCreation" />
+                <MenuItem mnemonicParsing="false" text="Valider la racine" fx:id="menuCheckRead" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" />
+                <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" fx:id="menuQuit" />
               </items>
             </Menu>
           </menus>
