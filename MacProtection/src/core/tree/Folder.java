@@ -23,6 +23,8 @@ public class Folder implements Serializable{
     private HashSet<Folder> folders;
     private HashSet<HashedFile> files;
     
+    private Folder parent = null;
+    
     private String name;
     
     /**
@@ -41,8 +43,21 @@ public class Folder implements Serializable{
      * 
      * @param folder The sub-folder to add. 
      */
-    public void addFolder(Folder folder){
+    public void addFolder(Folder folder) throws FolderException{
+        if(folder.parent != null){
+            throw new FolderException("Folder can have only one parent.");
+        }
+        folder.parent = this;
         this.folders.add(folder);
+    }
+    
+    /**
+     * Return the parent folder of this node.
+     * 
+     * @return The parent folder.
+     */
+    public Folder getParent(){
+        return this.parent;
     }
     
     /**
