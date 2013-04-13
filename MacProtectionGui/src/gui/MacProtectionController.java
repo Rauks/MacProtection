@@ -13,6 +13,7 @@ import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import core.tree.HashedFile;
+import gui.tree.ObservableFolder;
 import gui.tree.ObservableHashedFile;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,7 +72,7 @@ public class MacProtectionController implements Initializable {
     private DirectoryChooser dirChooser;
     private FileChooser fileChooser;
     private ReadOnlyBooleanWrapper isProcessing = new ReadOnlyBooleanWrapper(false);
-    private ReadOnlyObjectWrapper<TreeItem<Folder>> rootNode = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<TreeItem<ObservableFolder>> rootNode = new ReadOnlyObjectWrapper<>();
     private ObservableList<ObservableHashedFile> filesList = FXCollections.observableArrayList();
     
     /**
@@ -104,7 +105,7 @@ public class MacProtectionController implements Initializable {
         File fileToSave = this.fileChooser.showSaveDialog(this.getScene().getWindow());
         if(fileToSave != null){
             try {
-                CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.getValue().getValue(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+                CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
                 cw.write();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,11 +118,11 @@ public class MacProtectionController implements Initializable {
      * 
      * @param folder The folder selected.
      */
-    private void handleRootViewFolderSelected(Folder folder){
+    private void handleRootViewFolderSelected(ObservableFolder folder){
         this.filesList.clear();
-        for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
-            HashedFile file = it.next();
-            this.filesList.add(new ObservableHashedFile(file));
+        for(Iterator<ObservableHashedFile> it = folder.getObservableFiles().iterator(); it.hasNext();){
+            ObservableHashedFile file = it.next();
+            this.filesList.add(file);
         }
     }
     
@@ -160,7 +161,7 @@ public class MacProtectionController implements Initializable {
                                 public void handle(Event t) {
                                     MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
                                     try {
-                                        TreeItem<Folder> root = (TreeItem<Folder>) treeBuilder.get();
+                                        TreeItem<ObservableFolder> root = (TreeItem<ObservableFolder>) treeBuilder.get();
                                         rootNode.set(root);
                                     } catch (InterruptedException | ExecutionException ex) {
                                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,7 +285,7 @@ public class MacProtectionController implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if(newValue != null){
-                    TreeItem<Folder> selectedItem = (TreeItem<Folder>) newValue;
+                    TreeItem<ObservableFolder> selectedItem = (TreeItem<ObservableFolder>) newValue;
                     handleRootViewFolderSelected(selectedItem.getValue());
                 }
                 else{

@@ -4,46 +4,53 @@
  */
 package gui.tree;
 
+import core.tree.Folder;
+import java.util.HashSet;
 import java.util.Iterator;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
 /**
  *
  * @author Karl
  */
 public class ObservableFolder {
-    private final SimpleStringProperty name;
-    private final SimpleSetProperty<ObservableHashedFile> files;
-    private final SimpleSetProperty<ObservableFolder> folders;
+    private final SimpleObjectProperty<Folder> folder;
+    private final HashSet<ObservableHashedFile> files;
+    private boolean isValid;
 
-    public ObservableFolder(SimpleStringProperty name) {
-        this.name = name;
-        this.files = new SimpleSetProperty<>();
-        this.folders = new SimpleSetProperty<>();
+    public ObservableFolder(Folder folder) {
+        this.folder = new SimpleObjectProperty(folder);
+        this.files = new HashSet<>();
+        this.isValid = true;
+    }
+    
+    public void setInvalide(){
+        this.isValid = false;
+    }
+    
+    public Folder getFolder(){
+        return this.folder.get();
     }
     
     public void addObservableHashedFile(ObservableHashedFile file){
         this.files.add(file);
     }
     
-    public void addObservableFolder(ObservableFolder folder){
-        this.folders.add(folder);
+    public HashSet<ObservableHashedFile> getObservableFiles(){
+        return this.files;
     }
     
     public boolean isValid(){
-        for(Iterator<ObservableHashedFile> it = this.files.iterator(); it.hasNext();){
-            ObservableHashedFile file = it.next();
-            if(!file.isValid()){
-                return false;
-            }
-        }
-        for(Iterator<ObservableFolder> it = this.folders.iterator(); it.hasNext();){
-            ObservableFolder folder = it.next();
-            if(!folder.isValid()){
-                return false;
-            }
-        }
-        return true;
+        return this.isValid;
+    }
+    
+    @Override
+    public String toString(){
+        return this.folder.get().getName();
     }
 }

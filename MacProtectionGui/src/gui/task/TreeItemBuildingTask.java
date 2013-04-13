@@ -3,6 +3,10 @@ package gui.task;
 
 import core.processor.MacProcessor;
 import core.tree.Folder;
+import core.tree.HashedFile;
+import gui.tree.ObservableFolder;
+import gui.tree.ObservableHashedFile;
+import java.util.Iterator;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.concurrent.Task;
@@ -55,9 +59,13 @@ public class TreeItemBuildingTask extends Task{
      * @param folder The folder used to build the node.
      * @return The result node.
      */
-    private TreeItem<Folder> buildFolderTreeItem(Folder folder){
-        TreeItem<Folder> node = new TreeItem<>();
-        node.setValue(folder);
+    private TreeItem<ObservableFolder> buildFolderTreeItem(Folder folder){
+        TreeItem<ObservableFolder> node = new TreeItem<>();
+        ObservableFolder oFolder = new ObservableFolder(folder);
+        for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
+            oFolder.addObservableHashedFile(new ObservableHashedFile(it.next()));
+        }
+        node.setValue(oFolder);
         node.setGraphic(new ImageView(this.nodeImage));
         for(Folder f : folder.getSubFolders()){
             node.getChildren().add(this.buildFolderTreeItem(f));
@@ -73,7 +81,13 @@ public class TreeItemBuildingTask extends Task{
      * @throws Exception An unhandled exception which occurred during the background operation.
      */
     @Override
-    protected TreeItem<Folder> call() throws Exception {
-        return buildFolderTreeItem(this.rootFolder);
+    protected TreeItem<ObservableFolder> call() throws Exception {
+        try{
+            return buildFolderTreeItem(this.rootFolder);
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
     }
 }
