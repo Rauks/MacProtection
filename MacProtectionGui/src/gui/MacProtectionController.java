@@ -353,7 +353,6 @@ public class MacProtectionController implements Initializable {
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
                         if (!isEmpty()) {
-                            //ERROR NULL POINTER
                             ObservableHashedFile file = this.getTableView().getItems().get(this.getTableRow().getIndex());
                             if(file.isValid()){
                                 this.setTextFill(Color.GREEN);
