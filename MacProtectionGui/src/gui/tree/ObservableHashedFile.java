@@ -19,6 +19,7 @@ public class ObservableHashedFile {
     private final SimpleStringProperty hash;
     private final SimpleStringProperty name;
     private final SimpleLongProperty size;
+    private final SimpleStringProperty checkHash;
     
     /**
      * Create an observable {@link HashedFile}.
@@ -29,6 +30,7 @@ public class ObservableHashedFile {
         this.name = new SimpleStringProperty(file.getName());
         this.hash = new SimpleStringProperty(file.getHash());
         this.size = new SimpleLongProperty(file.getSize());
+        this.checkHash = new SimpleStringProperty();
     }
 
     /**
@@ -38,6 +40,24 @@ public class ObservableHashedFile {
      */
     public String getHash() {
         return this.hash.get();
+    }
+    
+    /**
+     * Define the {@code check hash} for this ObservableHashedFile
+     * 
+     * @param check The check hash.
+     */
+    public void setCheckHash(String check){
+        this.checkHash.set(check);
+    }
+    
+    /**
+     * Return {@code true} if a check hash has been defined.
+     * 
+     * @return {@code true} if a check hash has been defined.
+     */
+    public boolean hasCheckHash(){
+        return this.checkHash.isNotNull().get();
     }
 
     /**
@@ -56,5 +76,17 @@ public class ObservableHashedFile {
      */
     public long getSize() {
         return this.size.get();
+    }
+    
+    /**
+     * Compare the hash and the checkHash. Return {@code true} if they are the same or if no check hash are defined.
+     * 
+     * @return {@code true} if the hash and the check hash are the same or if no check hash are defined.
+     */
+    public boolean isValid(){
+        if(this.checkHash != null){
+            return this.checkHash.get().equals(this.hash.get());
+        }
+        return true;
     }
 }
