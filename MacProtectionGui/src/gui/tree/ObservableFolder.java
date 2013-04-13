@@ -17,15 +17,29 @@ public class ObservableFolder {
     private final SimpleObjectProperty<Folder> folder;
     private final HashSet<ObservableHashedFile> files;
     private boolean isValid;
+    private boolean isAdded;
+    private boolean isDeleted;
 
     public ObservableFolder(Folder folder) {
         this.folder = new SimpleObjectProperty(folder);
         this.files = new HashSet<>();
         this.isValid = true;
+        this.isAdded = false;
+        this.isDeleted = false;
     }
     
     public void setInvalide(){
         this.isValid = false;
+    }
+    
+    public void setAdded(){
+        this.isDeleted = false;
+        this.isAdded = true;
+    }
+    
+    public void setDeleted(){
+        this.isDeleted = true;
+        this.isAdded = false;
     }
     
     public Folder getFolder(){
@@ -42,6 +56,14 @@ public class ObservableFolder {
     
     public boolean isValid(){
         return this.isValid;
+    }
+    
+    public boolean isDeleted(){
+        return this.isDeleted;
+    }
+    
+    public boolean isAdded(){
+        return this.isAdded;
     }
     
     /**

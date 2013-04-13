@@ -104,6 +104,7 @@ public class CheckedTreeItemBuildingTask extends Task{
                 //Dir added locally
                 TreeItem<ObservableFolder> buildedNode = this.buildFolderTreeItem(f, null);
                 buildedNode.getValue().setInvalide();
+                buildedNode.getValue().setAdded();
                 node.getChildren().add(buildedNode);
             }
             else{
@@ -120,6 +121,7 @@ public class CheckedTreeItemBuildingTask extends Task{
                     //Dir deleted locally
                     TreeItem<ObservableFolder> buildedNode = this.buildFolderTreeItem(new Folder(c.getName()), c);
                     buildedNode.getValue().setInvalide();
+                    buildedNode.getValue().setDeleted();
                     node.getChildren().add(buildedNode);
                 }
             }
