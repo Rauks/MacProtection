@@ -8,14 +8,19 @@ package gui;
 import gui.task.TreeItemBuildingTask;
 import gui.task.MacProcessorTask;
 import core.MacAlgorithm;
+import core.check.CheckReader;
+import core.check.CheckReaderMacException;
+import core.check.CheckReaderReadingException;
 import core.check.CheckWriter;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import core.tree.HashedFile;
+import gui.task.CheckedTreeItemBuildingTask;
 import gui.tree.ObservableFolder;
 import gui.tree.ObservableHashedFile;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -107,6 +112,49 @@ public class MacProtectionController implements Initializable {
             try {
                 CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
                 cw.write();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    @FXML 
+    private void handleCheckFileLoading(){
+        File checkFile = this.fileChooser.showOpenDialog(this.getScene().getWindow());
+        if(checkFile != null){
+            try {
+                CheckReader cr = new CheckReader(new FileInputStream(checkFile), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+                cr.read();
+                Folder checkFolder = cr.getRootFolder();
+                final CheckedTreeItemBuildingTask treeBuilder = new CheckedTreeItemBuildingTask(this.rootNode.get().getValue().getFolder(), checkFolder);
+                final Thread treeBuilderThread = new Thread(treeBuilder);
+                treeProgress.progressProperty().bind(treeBuilder.processProgressProperty());
+                treeBuilder.setOnSucceeded(new EventHandler(){
+                    @Override
+                    public void handle(Event t) {
+                        MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
+                        try {
+                            TreeItem<ObservableFolder> root = (TreeItem<ObservableFolder>) treeBuilder.get();
+                            rootNode.set(root);
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally{
+                            isProcessing.set(false);
+                        }
+                    }
+                });
+                treeBuilder.setOnFailed(new EventHandler(){
+                    @Override
+                    public void handle(Event t) {
+                        MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
+                        isProcessing.set(false);
+                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                    }
+                });
+                MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
+                treeBuilderThread.start();
+            } catch (CheckReaderMacException | CheckReaderReadingException ex) {
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.WARNING, null, ex);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -305,7 +353,14 @@ public class MacProtectionController implements Initializable {
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
                         if (!isEmpty()) {
-                            this.setTextFill(Color.GREEN);
+                            //ERROR NULL POINTER
+                            ObservableHashedFile file = this.getTableView().getItems().get(this.getTableRow().getIndex());
+                            if(file.isValid()){
+                                this.setTextFill(Color.GREEN);
+                            }
+                            else{
+                                this.setTextFill(Color.RED);
+                            }
                             setText(item);
                         }
                     }

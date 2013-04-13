@@ -5,6 +5,7 @@
 package gui.tree;
 
 import core.tree.HashedFile;
+import java.util.Objects;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -93,9 +94,46 @@ public class ObservableHashedFile {
         if(!this.isValid){
             return false;
         }
-        if(this.checkHash != null){
+        if(this.checkHash.isNotNull().get()){
             return this.checkHash.get().equals(this.hash.get());
         }
         return true;
     }
+    
+    /**
+     * Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by {@link HashMap}.
+     * <p/>
+     * Two ObservableHashedFile with contained HashedFile with the same {@code name} will have the same hashCode.
+     * 
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.name.get());
+        return hash;
+    }
+    
+    /**
+     * Indicates whether some other object is "equal to" this one. A {@code ObservableHashedFile} is equals to another if their contained {{@link HashedFile} have the same {@code name} and {@code hash}.
+     * 
+     * @param obj The reference object with which to compare.
+     * @return {true} if the objetcs are "equals".
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ObservableHashedFile other = (ObservableHashedFile) obj;
+        if (!Objects.equals(this.name.get(), other.name.get())) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

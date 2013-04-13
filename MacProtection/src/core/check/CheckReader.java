@@ -57,11 +57,9 @@ public class CheckReader extends CheckMac{
                 }
                 this.root = f;
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(CheckReader.class.getName()).log(Level.WARNING, null, ex);
                 throw new CheckReaderReadingException("Error in folder tree reading.");
             }
         } catch (IOException ex) {
-            Logger.getLogger(CheckReader.class.getName()).log(Level.WARNING, null, ex);
             throw new CheckReaderReadingException("Error in check file reading.");
         }
     }

@@ -68,7 +68,11 @@
                         <AnchorPane id="AnchorPane" prefHeight="293.0" prefWidth="243.0" VBox.vgrow="ALWAYS">
                           <children>
                             <TreeView fx:id="treeView" focusTraversable="false" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                            <ProgressIndicator fx:id="workingIndicator" layoutX="104.0" layoutY="128.0" />
+                            <VBox id="VBox" alignment="CENTER" mouseTransparent="true" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <children>
+                                <ProgressIndicator fx:id="workingIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mouseTransparent="true" prefHeight="36.0" prefWidth="36.0" />
+                              </children>
+                            </VBox>
                           </children>
                         </AnchorPane>
                         <ProgressBar fx:id="processorProgress" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" progress="0.0">

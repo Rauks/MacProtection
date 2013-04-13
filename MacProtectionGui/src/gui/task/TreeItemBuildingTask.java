@@ -82,12 +82,6 @@ public class TreeItemBuildingTask extends Task{
      */
     @Override
     protected TreeItem<ObservableFolder> call() throws Exception {
-        try{
-            return buildFolderTreeItem(this.rootFolder);
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-            return null;
-        }
+        return buildFolderTreeItem(this.rootFolder);
     }
 }
