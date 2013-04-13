@@ -116,7 +116,7 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleCheckFileCreation" text="Créer un fichier de validation" fx:id="menuCheckCreation">
                   <graphic>
-                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                       <image>
                         <Image url="@res/menuCheckWrite.png" preserveRatio="false" smooth="false" />
                       </image>
@@ -125,7 +125,7 @@
                 </MenuItem>
                 <MenuItem mnemonicParsing="false" text="Valider la racine" fx:id="menuCheckRead">
                   <graphic>
-                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                       <image>
                         <Image url="@res/menuCheckRead.png" preserveRatio="false" smooth="false" />
                       </image>
@@ -135,7 +135,7 @@
                 <SeparatorMenuItem mnemonicParsing="false" />
                 <MenuItem mnemonicParsing="false" onAction="#handleQuitAction" text="Quitter" fx:id="menuQuit">
                   <graphic>
-                    <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                       <image>
                         <Image url="@res/menuQuit.png" preserveRatio="false" smooth="false" />
                       </image>
