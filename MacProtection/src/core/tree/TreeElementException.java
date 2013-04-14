@@ -8,8 +8,8 @@ package core.tree;
  *
  * @author Karl
  */
-public class FolderException extends Exception {
-    public FolderException(String message) {
+public class TreeElementException extends Exception {
+    public TreeElementException(String message) {
         super(message);
     }
 }

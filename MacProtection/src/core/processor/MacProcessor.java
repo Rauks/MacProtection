@@ -7,7 +7,7 @@ package core.processor;
 import core.MacAlgorithm;
 import core.MacInputStream;
 import core.tree.Folder;
-import core.tree.FolderException;
+import core.tree.TreeElementException;
 import core.tree.HashedFile;
 import java.io.File;
 import java.io.FileInputStream;
@@ -118,7 +118,7 @@ public class MacProcessor {
                             }
                             incrProcessedFiles();
                             fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
-                        } catch (IOException | NoSuchAlgorithmException ex) {
+                        } catch (IOException | NoSuchAlgorithmException | TreeElementException ex) {
                             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
                             incrEncouredErrors();
                         }
@@ -128,7 +128,7 @@ public class MacProcessor {
             else if(file.isDirectory()){
                 try {
                     f.addFolder(initFolder(file));
-                } catch (FolderException ex) {
+                } catch (TreeElementException ex) {
                     Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
                     incrEncouredErrors();
                 }

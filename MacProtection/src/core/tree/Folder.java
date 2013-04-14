@@ -17,7 +17,7 @@ import java.util.Objects;
  * 
  * @author Karl
  */
-public class Folder implements Serializable{
+public class Folder extends ParentedTreeElement implements Serializable{
     private static final long serialVersionUID = 1L;
     
     private HashSet<Folder> folders;
@@ -43,21 +43,9 @@ public class Folder implements Serializable{
      * 
      * @param folder The sub-folder to add. 
      */
-    public void addFolder(Folder folder) throws FolderException{
-        if(folder.parent != null){
-            throw new FolderException("Folder can have only one parent.");
-        }
-        folder.parent = this;
+    public void addFolder(Folder folder) throws TreeElementException{
+        folder.setParent(this);
         this.folders.add(folder);
-    }
-    
-    /**
-     * Return the parent folder of this node.
-     * 
-     * @return The parent folder.
-     */
-    public Folder getParent(){
-        return this.parent;
     }
     
     /**
@@ -65,7 +53,8 @@ public class Folder implements Serializable{
      * 
      * @param file The HashedFile to add.
      */
-    public void addFile(HashedFile file){
+    public void addFile(HashedFile file) throws TreeElementException{
+        file.setParent(this);
         this.files.add(file);
     }
     
@@ -93,7 +82,7 @@ public class Folder implements Serializable{
      * @see HashedFile
      */
     public HashSet<HashedFile> getFiles(){
-        return this.files;
+        return new HashSet<>(this.files);
     }
     
     /**
@@ -144,7 +133,7 @@ public class Folder implements Serializable{
      * @return The sub-folders.
      */
     public HashSet<Folder> getSubFolders(){
-        return this.folders;
+        return  new HashSet<>(this.folders);
     }
     
     /**
@@ -199,7 +188,7 @@ public class Folder implements Serializable{
     /**
      * Indicates whether some other object is "equal to" this one. 
      * To be equals, the folder structure must be the same between the current folder and the {@code other}, 
-     * the contained files and sub-folders must be equals to.
+     * the contained files, sub-folders and parents must be equals to.
      * 
      * @param obj The reference object with which to compare.
      * @return {true} if the objetcs are "equals".
@@ -217,6 +206,9 @@ public class Folder implements Serializable{
             return false;
         }
         if (!Objects.equals(this.files, other.files)) {
+            return false;
+        }
+        if (!Objects.equals(this.parent, other.parent)) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {

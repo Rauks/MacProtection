@@ -12,7 +12,7 @@ import java.util.Objects;
  * 
  * @author Karl
  */
-public class HashedFile implements Serializable{
+public class HashedFile extends ParentedTreeElement implements Serializable{
     private static final long serialVersionUID = 1L;
     
     private String name;
