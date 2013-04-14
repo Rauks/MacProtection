@@ -21,7 +21,7 @@ public class ObservableHashedFile {
     private final SimpleStringProperty name;
     private final SimpleLongProperty size;
     private final SimpleStringProperty checkHash;
-    private boolean isValid;
+    private CheckingFlag flag;
     
     /**
      * Create an observable {@link HashedFile}.
@@ -33,7 +33,7 @@ public class ObservableHashedFile {
         this.hash = new SimpleStringProperty(file.getHash());
         this.size = new SimpleLongProperty(file.getSize());
         this.checkHash = new SimpleStringProperty();
-        this.isValid = true;
+        this.flag = CheckingFlag.VALID;
     }
 
     /**
@@ -45,8 +45,8 @@ public class ObservableHashedFile {
         return this.hash.get();
     }
     
-    public void setInvalid(){
-        this.isValid = false;
+    public void setFlag(CheckingFlag flag){
+        this.flag = flag;
     }
     
     /**
@@ -56,15 +56,9 @@ public class ObservableHashedFile {
      */
     public void setCheckHash(String check){
         this.checkHash.set(check);
-    }
-    
-    /**
-     * Return {@code true} if a check hash has been defined.
-     * 
-     * @return {@code true} if a check hash has been defined.
-     */
-    public boolean hasCheckHash(){
-        return this.checkHash.isNotNull().get();
+        if(!this.hash.get().equals(check)){
+            this.flag = CheckingFlag.INVALID;
+        }
     }
 
     /**
@@ -85,19 +79,8 @@ public class ObservableHashedFile {
         return this.size.get();
     }
     
-    /**
-     * Compare the hash and the checkHash. Return {@code true} if they are the same or if no check hash are defined.
-     * 
-     * @return {@code true} if the hash and the check hash are the same or if no check hash are defined.
-     */
-    public boolean isValid(){
-        if(!this.isValid){
-            return false;
-        }
-        if(this.checkHash.isNotNull().get()){
-            return this.checkHash.get().equals(this.hash.get());
-        }
-        return true;
+    public CheckingFlag getFlag(){
+        return this.flag;
     }
     
     /**
@@ -109,9 +92,9 @@ public class ObservableHashedFile {
      */
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 61 * hash + Objects.hashCode(this.name.get());
-        return hash;
+        int tempHash = 7;
+        tempHash = 61 * tempHash + Objects.hashCode(this.name.get());
+        return tempHash;
     }
     
     /**

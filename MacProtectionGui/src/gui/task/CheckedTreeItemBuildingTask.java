@@ -6,6 +6,7 @@ package gui.task;
 
 import core.tree.Folder;
 import core.tree.HashedFile;
+import gui.tree.CheckingFlag;
 import gui.tree.ObservableFolder;
 import gui.tree.ObservableHashedFile;
 import java.util.HashSet;
@@ -22,7 +23,6 @@ import javafx.scene.image.ImageView;
  * @author Karl
  */
 public class CheckedTreeItemBuildingTask extends Task{
-    Image nodeImage;
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0d);
     private int totalNodes;
     private int processedNodes;
@@ -50,7 +50,6 @@ public class CheckedTreeItemBuildingTask extends Task{
         this.checkFolder = checkFolder;
         this.totalNodes = rootFolder.getAllSubFolders().size();
         this.processedNodes = 0;
-        this.nodeImage = new Image(TreeItemBuildingTask.class.getResourceAsStream("/gui/res/folder.png"));
     }
 
     /**
@@ -64,27 +63,26 @@ public class CheckedTreeItemBuildingTask extends Task{
         ObservableFolder oFolder = new ObservableFolder(folder);
         if(check == null){ 
             //Folder node dont exists in check tree
-            oFolder.setInvalide();
+            oFolder.setFlag(CheckingFlag.INVALID);
             //Files added in local
             for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
                 HashedFile file = it.next();
                 ObservableHashedFile oFile;
-                oFile = new ObservableHashedFile(new HashedFile(file.getName(), "Ajouté", file.getSize()));
-                oFile.setInvalid();
+                oFile = new ObservableHashedFile(new HashedFile(file.getName(), "", file.getSize()));
+                oFile.setFlag(CheckingFlag.ADDED);
                 oFolder.addObservableHashedFile(oFile);
             }
             //Folders added in locel
             for(Folder f : folder.getSubFolders()){
                 TreeItem<ObservableFolder> buildedNode = this.buildFolderTreeItem(f, null);
-                buildedNode.getValue().setInvalide();
-                buildedNode.getValue().setAdded();
+                buildedNode.getValue().setFlag(CheckingFlag.ADDED);
                 node.getChildren().add(buildedNode);
             }
         }
         else{ 
             //Folder node exists in check tree
             if(!folder.isConformTo(check)){
-                oFolder.setInvalide();
+                oFolder.setFlag(CheckingFlag.INVALID);
             }
             //Files & files added in local
             for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
@@ -93,8 +91,8 @@ public class CheckedTreeItemBuildingTask extends Task{
                 HashedFile cFile = check.getFile(file.getName());
                 if(cFile == null){ 
                     //File added
-                    oFile = new ObservableHashedFile(new HashedFile(file.getName(), "Ajouté", file.getSize()));
-                    oFile.setInvalid();
+                    oFile = new ObservableHashedFile(new HashedFile(file.getName(), "", file.getSize()));
+                    oFile.setFlag(CheckingFlag.ADDED);
                 }
                 else{ 
                     //File exists
@@ -107,9 +105,9 @@ public class CheckedTreeItemBuildingTask extends Task{
             for(Iterator<HashedFile> it = check.getFiles().iterator(); it.hasNext();){
                 HashedFile cFile = it.next();
                 if(folder.getFile(cFile.getName()) == null){
-                    ObservableHashedFile delFile = new ObservableHashedFile(new HashedFile(cFile.getName(), "Supprimé", cFile.getSize()));
+                    ObservableHashedFile delFile = new ObservableHashedFile(new HashedFile(cFile.getName(), "", cFile.getSize()));
                     delFile.setCheckHash(cFile.getHash());
-                    delFile.setInvalid();
+                    delFile.setFlag(CheckingFlag.DELETED);
                     oFolder.addObservableHashedFile(delFile);
                 }
             }
@@ -120,8 +118,7 @@ public class CheckedTreeItemBuildingTask extends Task{
                 if(c == null){
                     //Folder added locally
                     TreeItem<ObservableFolder> buildedNode = this.buildFolderTreeItem(f, null);
-                    buildedNode.getValue().setInvalide();
-                    buildedNode.getValue().setAdded();
+                    buildedNode.getValue().setFlag(CheckingFlag.ADDED);
                     node.getChildren().add(buildedNode);
                 }
                 else{
@@ -136,15 +133,13 @@ public class CheckedTreeItemBuildingTask extends Task{
                 Folder c = it.next();
                 if(!findedFolders.contains(new ObservableFolder(c))){
                     TreeItem<ObservableFolder> buildedNode = this.buildFolderTreeItem(new Folder(c.getName()), c);
-                    buildedNode.getValue().setInvalide();
-                    buildedNode.getValue().setDeleted();
+                    buildedNode.getValue().setFlag(CheckingFlag.DELETED);
                     node.getChildren().add(buildedNode);
                 }
             }
         }
         
         node.setValue(oFolder);
-        node.setGraphic(new ImageView(this.nodeImage));
         this.progress.set((double) this.processedNodes++ / (double) this.totalNodes);
         return node;
     }

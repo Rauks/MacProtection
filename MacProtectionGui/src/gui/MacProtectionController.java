@@ -58,9 +58,12 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -121,6 +124,7 @@ public class MacProtectionController implements Initializable {
     @FXML 
     private void handleCheckFileLoading(){
         File checkFile = this.fileChooser.showOpenDialog(this.getScene().getWindow());
+        this.isProcessing.set(true);
         if(checkFile != null){
             try {
                 CheckReader cr = new CheckReader(new FileInputStream(checkFile), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
@@ -154,8 +158,10 @@ public class MacProtectionController implements Initializable {
                 MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                 treeBuilderThread.start();
             } catch (CheckReaderMacException | CheckReaderReadingException ex) {
+                this.isProcessing.set(false);
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.WARNING, null, ex);
             } catch (FileNotFoundException ex) {
+                this.isProcessing.set(false);
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -341,6 +347,42 @@ public class MacProtectionController implements Initializable {
                 }
             }
         });
+        this.treeView.setCellFactory(new Callback<TreeView<ObservableFolder>, TreeCell<ObservableFolder>>() {
+            private Image nodeImage = new Image(TreeItemBuildingTask.class.getResourceAsStream("/gui/res/folder.png"));
+            
+            @Override
+            public TreeCell<ObservableFolder> call(TreeView<ObservableFolder> param) {
+                return new TreeCell<ObservableFolder>() {
+                    @Override
+                    public void updateItem(ObservableFolder item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(!empty){
+                        this.setGraphic(new ImageView(nodeImage));
+                            if (!isEmpty()) {
+                                switch(item.getFlag()){
+                                    case VALID:
+                                        this.setTextFill(Color.GREEN);
+                                        this.setText(item.toString());
+                                        break;
+                                    case INVALID:
+                                        this.setTextFill(Color.RED);
+                                        setText(item.toString());
+                                        break;
+                                    case DELETED:
+                                        this.setTextFill(Color.ORANGE);
+                                        setText(item.toString() + " (Supprimé)");
+                                        break;
+                                    case ADDED:
+                                        this.setTextFill(Color.ORANGE);
+                                        setText(item.toString() + " (Ajouté)");
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+        });
         
         //Files table bindings
         this.filesColumn.setCellValueFactory(new PropertyValueFactory<ObservableHashedFile, String>("name"));
@@ -354,13 +396,24 @@ public class MacProtectionController implements Initializable {
                         super.updateItem(item, empty);
                         if (!isEmpty()) {
                             ObservableHashedFile file = this.getTableView().getItems().get(this.getTableRow().getIndex());
-                            if(file.isValid()){
-                                this.setTextFill(Color.GREEN);
+                            switch(file.getFlag()){
+                                case VALID:
+                                    this.setTextFill(Color.GREEN);
+                                    this.setText(item);
+                                    break;
+                                case INVALID:
+                                    this.setTextFill(Color.RED);
+                                    setText(item);
+                                    break;
+                                case DELETED:
+                                    this.setTextFill(Color.ORANGE);
+                                    setText("Supprimé");
+                                    break;
+                                case ADDED:
+                                    this.setTextFill(Color.ORANGE);
+                                    setText("Ajouté");
+                                    break;
                             }
-                            else{
-                                this.setTextFill(Color.RED);
-                            }
-                            setText(item);
                         }
                     }
                 };

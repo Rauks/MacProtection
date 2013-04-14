@@ -25,7 +25,6 @@ import javafx.scene.image.ImageView;
  * @author Karl
  */
 public class TreeItemBuildingTask extends Task{
-    Image nodeImage;
     private ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0d);
     private int totalNodes;
     private int processedNodes;
@@ -50,7 +49,6 @@ public class TreeItemBuildingTask extends Task{
         this.rootFolder = rootFolder;
         this.totalNodes = rootFolder.getAllSubFolders().size();
         this.processedNodes = 0;
-        this.nodeImage = new Image(TreeItemBuildingTask.class.getResourceAsStream("/gui/res/folder.png"));
     }
 
     /**
@@ -66,7 +64,6 @@ public class TreeItemBuildingTask extends Task{
             oFolder.addObservableHashedFile(new ObservableHashedFile(it.next()));
         }
         node.setValue(oFolder);
-        node.setGraphic(new ImageView(this.nodeImage));
         for(Folder f : folder.getSubFolders()){
             node.getChildren().add(this.buildFolderTreeItem(f));
         }
