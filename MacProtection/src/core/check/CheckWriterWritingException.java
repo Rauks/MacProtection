@@ -8,8 +8,8 @@ package core.check;
  *
  * @author Karl
  */
-public class CheckReaderMacException extends Exception {
-    public CheckReaderMacException(String message) {
+public class CheckWriterWritingException extends Exception {
+    public CheckWriterWritingException(String message) {
         super(message);
     }
 }

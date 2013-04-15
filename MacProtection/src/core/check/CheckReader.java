@@ -44,7 +44,7 @@ public class CheckReader extends CheckMac{
      * @throws CheckReaderMacException In case of check file rejection. This append when the inner Mac hash and the calculated verification Mac hash differ.
      * @throws CheckReaderReadingException In case of check file structure error. The file is not a check file or may be corrupted.
      */
-    public void read() throws CheckReaderMacException, CheckReaderReadingException{
+    public void read() throws CheckReaderReadingException, CheckMacException{
         try(ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(this.in))){
             int hashSize = ois.readInt();
             byte[] filigramHash = new byte[hashSize];
@@ -53,11 +53,13 @@ public class CheckReader extends CheckMac{
                 Folder f = (Folder) ois.readObject();
                 byte[] hash = this.getCheckMac(f);
                 if(!Arrays.equals(filigramHash, hash)){
-                    throw new CheckReaderMacException("The inner Mac hash is invalid.");
+                    throw new CheckMacException("Invalid Check Mac hash.");
                 }
                 this.root = f;
+            } catch (CheckMacException ex) {
+                throw new CheckMacException("Invalid Check Mac hash.");
             } catch (ClassNotFoundException ex) {
-                throw new CheckReaderReadingException("Error in folder tree reading.");
+                throw new CheckReaderReadingException("Error in check file reading.");
             }
         } catch (IOException ex) {
             throw new CheckReaderReadingException("Error in check file reading.");

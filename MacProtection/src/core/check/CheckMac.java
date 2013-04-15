@@ -36,7 +36,7 @@ public abstract class CheckMac {
      * @return The Mac hash in bytes array form.
      * @see javax.crypto.Mac
      */
-    protected byte[] getCheckMac(Serializable object){
+    protected byte[] getCheckMac(Serializable object) throws CheckMacException{
         try {
             File temp = File.createTempFile("mac", null);
             temp.deleteOnExit();
@@ -47,11 +47,10 @@ public abstract class CheckMac {
             try(MacInputStream mis = new MacInputStream(new FileInputStream(temp), this.algorithm, this.key.getBytes())){
                 return mis.getMacBytes();
             } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
+                throw new CheckMacException("No such Mac algorithm.");
             }
         } catch (IOException ex) {
-            Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CheckMacException("Error in Mac calculation.");
         }
-        return null;
     }
 }

@@ -45,15 +45,17 @@ public class CheckWriter extends CheckMac{
      * 
      * @see java.util.zip.GZIPOutputStream
      */
-    public void write(){
+    public void write() throws CheckWriterWritingException, CheckMacException{
         try(ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(this.out))){
                 byte[] hash = this.getCheckMac(this.folder);
                 oos.writeInt(hash.length);
                 oos.write(hash);
                 oos.writeObject(this.folder);
                 oos.flush();
+        } catch (CheckMacException ex) {
+            throw new CheckMacException("Invalid Check Mac hash.");
         } catch (IOException ex) {
-            Logger.getLogger(CheckWriter.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CheckWriterWritingException("Error in check file writing.");
         }
     }
 }

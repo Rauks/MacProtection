@@ -5,10 +5,11 @@
 package usecase;
 
 import core.MacAlgorithm;
+import core.check.CheckMacException;
 import core.check.CheckReader;
-import core.check.CheckReaderMacException;
 import core.check.CheckReaderReadingException;
 import core.check.CheckWriter;
+import core.check.CheckWriterWritingException;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
@@ -55,7 +56,7 @@ public class MacProtection {
                 CheckWriter cw = new CheckWriter(new FileOutputStream(new File("check.test")), physicalRoot, algorithm, key);
                 cw.write();
                 System.out.println("DONE.");
-            } catch (FileNotFoundException ex) {
+            } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
             }
             
@@ -67,7 +68,7 @@ public class MacProtection {
                 cr.read();
                 validationFolder = cr.getRootFolder();
                 System.out.println("DONE.");
-            } catch (CheckReaderMacException | CheckReaderReadingException | FileNotFoundException ex) {
+            } catch (CheckMacException | CheckReaderReadingException | FileNotFoundException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
             }
             
