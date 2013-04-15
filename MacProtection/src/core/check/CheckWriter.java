@@ -53,7 +53,7 @@ public class CheckWriter extends CheckMac{
                 oos.writeObject(this.folder);
                 oos.flush();
         } catch (CheckMacException ex) {
-            throw new CheckMacException("Invalid Check Mac hash.");
+            throw new CheckMacException("Invalid check file Mac hash.");
         } catch (IOException ex) {
             throw new CheckWriterWritingException("Error in check file writing.");
         }

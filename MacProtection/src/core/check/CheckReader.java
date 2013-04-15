@@ -53,11 +53,11 @@ public class CheckReader extends CheckMac{
                 Folder f = (Folder) ois.readObject();
                 byte[] hash = this.getCheckMac(f);
                 if(!Arrays.equals(filigramHash, hash)){
-                    throw new CheckMacException("Invalid Check Mac hash.");
+                    throw new CheckMacException("Invalid check file Mac hash.");
                 }
                 this.root = f;
             } catch (CheckMacException ex) {
-                throw new CheckMacException("Invalid Check Mac hash.");
+                throw new CheckMacException("Invalid check file Mac hash.");
             } catch (ClassNotFoundException ex) {
                 throw new CheckReaderReadingException("Error in check file reading.");
             }
