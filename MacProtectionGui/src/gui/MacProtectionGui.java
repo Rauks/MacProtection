@@ -43,6 +43,7 @@ public class MacProtectionGui extends Application {
                 Platform.exit();
             }
         });
+        stage.setTitle("Validateur Mac");
         
         stage.setScene(scene);
         stage.show();
