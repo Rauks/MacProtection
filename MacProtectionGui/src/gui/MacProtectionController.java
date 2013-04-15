@@ -117,6 +117,10 @@ public class MacProtectionController implements Initializable {
             try {
                 CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
                 cw.write();
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Fichier de validation créé.");
+                modal.showAndWait();
             } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
