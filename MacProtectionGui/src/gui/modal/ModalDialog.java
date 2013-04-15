@@ -73,7 +73,11 @@ public class ModalDialog extends Stage{
     private VBox messagesBox;
     private HBox buttonsBox;
     private ImageView icon;
-            
+         
+    public ModalDialog(ModalType type){
+        this(type, null);
+    }
+    
     public ModalDialog(ModalType type, final EventHandler<WindowEvent> closeHandler){
         this.mainPane = new BorderPane();
         
@@ -111,6 +115,10 @@ public class ModalDialog extends Stage{
                 }
             }
         });
+    }
+    
+    public void addButton(ModalButton button){
+        this.addButton(button, null);
     }
     
     public void addButton(ModalButton button, final EventHandler<ActionEvent> handler){
