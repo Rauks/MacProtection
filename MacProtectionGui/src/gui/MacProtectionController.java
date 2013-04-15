@@ -120,7 +120,7 @@ public class MacProtectionController implements Initializable {
             } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
-                modal.addMessage(ex.getMessage());
+                modal.addMessage("Erreur d'écriture du fichier de validation.");
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -146,10 +146,14 @@ public class MacProtectionController implements Initializable {
                         try {
                             TreeItem<ObservableFolder> root = (TreeItem<ObservableFolder>) treeBuilder.get();
                             rootNode.set(root);
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-                        } finally{
                             isProcessing.set(false);
+                            ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                            modal.addButton(ModalDialog.ModalButton.OK);
+                            modal.addMessage("Validation terminée.");
+                            modal.showAndWait();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            isProcessing.set(false);
+                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 });
@@ -158,16 +162,27 @@ public class MacProtectionController implements Initializable {
                     public void handle(Event t) {
                         MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
                         isProcessing.set(false);
-                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                        ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                        modal.addButton(ModalDialog.ModalButton.OK);
+                        modal.addMessage("Erreur de construction de l'arborescence des dossiers.");
+                        modal.showAndWait();
+                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Folders building failed.");
                     }
                 });
                 MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                 treeBuilderThread.start();
-            } catch (FileNotFoundException | CheckReaderReadingException | CheckMacException ex) {
+            } catch (FileNotFoundException | CheckReaderReadingException ex) {
                 this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
-                modal.addMessage(ex.getMessage());
+                modal.addMessage("Erreur de lecture du fichier de validation.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (CheckMacException ex) {
+                this.isProcessing.set(false);
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Fichier de validation corrumpu.");
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -224,10 +239,14 @@ public class MacProtectionController implements Initializable {
                                     try {
                                         TreeItem<ObservableFolder> root = (TreeItem<ObservableFolder>) treeBuilder.get();
                                         rootNode.set(root);
-                                    } catch (InterruptedException | ExecutionException ex) {
-                                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-                                    } finally{
                                         isProcessing.set(false);
+                                        ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                                        modal.addButton(ModalDialog.ModalButton.OK);
+                                        modal.addMessage("Calculs terminés.");
+                                        modal.showAndWait();
+                                    } catch (InterruptedException | ExecutionException ex) {
+                                        isProcessing.set(false);
+                                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
                                     }
                                 }
                             });
@@ -238,7 +257,7 @@ public class MacProtectionController implements Initializable {
                                     isProcessing.set(false);
                                     ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                                     modal.addButton(ModalDialog.ModalButton.OK);
-                                    modal.addMessage("Folders tree building failed.");
+                                    modal.addMessage("Erreur de construction de l'arborescence des dossiers.");
                                     modal.showAndWait();
                                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Folders tree building failed.");
                                 }
@@ -258,7 +277,7 @@ public class MacProtectionController implements Initializable {
                         isProcessing.set(false);
                         ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                         modal.addButton(ModalDialog.ModalButton.OK);
-                        modal.addMessage("Mac Processor failed.");
+                        modal.addMessage("Erreur de calcul des hashs Mac.");
                         modal.showAndWait();
                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Mac Processor failed.");
                     }
