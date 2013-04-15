@@ -8,14 +8,16 @@ package gui;
 import gui.task.TreeItemBuildingTask;
 import gui.task.MacProcessorTask;
 import core.MacAlgorithm;
+import core.check.CheckMacException;
 import core.check.CheckReader;
-import core.check.CheckReaderMacException;
 import core.check.CheckReaderReadingException;
 import core.check.CheckWriter;
+import core.check.CheckWriterWritingException;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import core.tree.HashedFile;
+import gui.modal.ModalDialog;
 import gui.task.CheckedTreeItemBuildingTask;
 import gui.tree.ObservableFolder;
 import gui.tree.ObservableHashedFile;
@@ -115,7 +117,11 @@ public class MacProtectionController implements Initializable {
             try {
                 CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
                 cw.write();
-            } catch (FileNotFoundException ex) {
+            } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage(ex.getMessage());
+                modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -157,11 +163,12 @@ public class MacProtectionController implements Initializable {
                 });
                 MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                 treeBuilderThread.start();
-            } catch (CheckReaderMacException | CheckReaderReadingException ex) {
+            } catch (FileNotFoundException | CheckReaderReadingException | CheckMacException ex) {
                 this.isProcessing.set(false);
-                Logger.getLogger(MacProtectionController.class.getName()).log(Level.WARNING, null, ex);
-            } catch (FileNotFoundException ex) {
-                this.isProcessing.set(false);
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage(ex.getMessage());
+                modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -229,7 +236,11 @@ public class MacProtectionController implements Initializable {
                                 public void handle(Event t) {
                                     MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
                                     isProcessing.set(false);
-                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Tree building failed.");
+                                    ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                                    modal.addButton(ModalDialog.ModalButton.OK);
+                                    modal.addMessage("Folders tree building failed.");
+                                    modal.showAndWait();
+                                    Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Folders tree building failed.");
                                 }
                             });
                             MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
@@ -243,9 +254,13 @@ public class MacProtectionController implements Initializable {
                 processor.setOnFailed(new EventHandler(){
                     @Override
                     public void handle(Event t) {
-                         MacProtectionGui.WORKING_THREADS.remove(processorThread);
-                         isProcessing.set(false);
-                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Processor failed.");
+                        MacProtectionGui.WORKING_THREADS.remove(processorThread);
+                        isProcessing.set(false);
+                        ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                        modal.addButton(ModalDialog.ModalButton.OK);
+                        modal.addMessage("Mac Processor failed.");
+                        modal.showAndWait();
+                        Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Mac Processor failed.");
                     }
                 });
                 MacProtectionGui.WORKING_THREADS.add(processorThread);
