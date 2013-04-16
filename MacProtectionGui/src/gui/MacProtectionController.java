@@ -136,8 +136,14 @@ public class MacProtectionController implements Initializable {
         }
     }
     
+    /**
+     * Load a check file and validate the current root tree with the checking tree of the check file.
+     * 
+     * @param event The {@link ActionEvent} associated. 
+     */
+    
     @FXML 
-    private void handleCheckFileLoading(){
+    private void handleCheckFileLoading(ActionEvent event){
         File checkFile = this.fileChooser.showOpenDialog(this.getScene().getWindow());
         this.isProcessing.set(true);
         if(checkFile != null){
