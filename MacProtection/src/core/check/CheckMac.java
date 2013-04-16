@@ -16,7 +16,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- *
+ * Provide a protected method to calculate Mac hash of serialized objects.
+ * 
  * @author Karl
  */
 public abstract class CheckMac {
@@ -33,6 +34,9 @@ public abstract class CheckMac {
      * 
      * @param object The serializable object.
      * @return The Mac hash in bytes array form.
+     * @throws NoSuchAlgorithmException If no Provider supports a MacSpi implementation for the specified algorithm.
+     * @throws InvalidKeyException If the given key is inappropriate for initializing this Mac.
+     * @throws IOException If an io error occurs.
      * @see javax.crypto.Mac
      */
     protected byte[] getCheckMac(Serializable object) throws IOException, NoSuchAlgorithmException, InvalidKeyException{
