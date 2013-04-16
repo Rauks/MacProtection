@@ -5,6 +5,7 @@
 package usecase;
 
 import core.MacAlgorithm;
+import core.MacAlgorithmException;
 import core.check.CheckMacException;
 import core.check.CheckReader;
 import core.check.CheckReaderReadingException;
@@ -33,9 +34,16 @@ public class MacProtection {
     public static void main(String[] args) {
         File dirToScan = new File(".");
         String key = "testKey";
-        MacAlgorithm algorithm = MacAlgorithm.HmacSHA256;
-            
+        MacAlgorithm algorithm;
         try {
+            //List and choice of the Hmac algorithm.
+            System.out.println("AVAILABLE ALGORITHMS:");
+            for(String alg : MacAlgorithm.AVAILABLE_ALGORITHMS){
+                System.out.println(alg);
+            }
+            System.out.println("");
+            algorithm = new MacAlgorithm("HmacSHA256");
+
             //Processing a physical repertory
             MacProcessor p = new MacProcessor(dirToScan, algorithm, key, MacProcessor.MacOutput.HEXADECIMAL);
             p.addMacProcessorListener(new MacProcessorListener() {
@@ -77,6 +85,8 @@ public class MacProtection {
             System.out.println(physicalRoot.isConformTo(validationFolder));
             
         } catch (MacProcessorException ex) {
+            Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MacAlgorithmException ex) {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

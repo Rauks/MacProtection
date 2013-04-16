@@ -4,46 +4,63 @@
  */
 package core;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.security.Provider;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * List the {@link javax.crypto.Mac} usable algorithms as defined in RFC 2104.
+ * List and use of the {@link javax.crypto.Mac} usable algorithms.
  * 
  * @author Karl
  */
-public enum MacAlgorithm {
-    HmacMD5("HmacMD5"),
-    HmacSHA1("HmacSHA1"),
-    HmacSHA256("HmacSHA256"),
-    HmacSHA384("HmacSHA384"),
-    HmacSHA512("HmacSHA512");
+public class MacAlgorithm {
+    /**
+     * A {@link List} containing the available Mac algorithms.
+     */
+    public static List<String> AVAILABLE_ALGORITHMS = getAlgorithms();
     
     private String algorithm;
     
     /**
-     * Construct the enum values with their algorithms.
+     * Construct a MacAlgorithm by his algorithms name.
      * 
-     * @param algorithm The Hmac algorithms as defined in RFC 2104.
+     * @param algorithm The Hmac algorithms name.
      */
-    private MacAlgorithm(String algorithm){
+    public MacAlgorithm(String algorithm) throws MacAlgorithmException{
+        if(!AVAILABLE_ALGORITHMS.contains(algorithm)){
+            throw new MacAlgorithmException("Mac algorithm unavailable.");
+        }
         this.algorithm = algorithm;
     }
     
     /**
-     * Returns an {@link Set} containing the constants of this enum.
+     * Returns a {@link List} containing the available Mac algorithms.
      * 
-     * @return A set containing the constants of this enum.
+     * @return A set containing the available Mac algorithms.
      */
-    public static Set<MacAlgorithm> getAlgorithms(){
-        return new HashSet<>(Arrays.asList(MacAlgorithm.values()));
+    private static List<String> getAlgorithms(){
+        Provider[] providers = Security.getProviders();
+        List<String> macs = new ArrayList<>();
+        
+        for (int i = 0; i != providers.length; i++) {
+            for(Iterator<Object> it = providers[i].keySet().iterator(); it.hasNext();){
+                String entry = (String) it.next();
+                if (entry.startsWith("Mac.") && !entry.endsWith(" SupportedKeyFormats")) {
+                    macs.add(entry.substring("Mac.".length()));
+                }
+            }
+        }
+        Collections.sort(macs);
+        return macs;
     }
     
     /**
-     * Returns the string form of this Hmac algoritm as defined in RFC 2104.
+     * Returns the string form of this Hmac algoritm.
      * 
-     * @return The Hmac algorithms as defined in RFC 2104.
+     * @return The Hmac algorithms.
      */
     @Override
     public String toString(){
