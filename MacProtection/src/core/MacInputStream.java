@@ -36,7 +36,7 @@ public class MacInputStream extends FilterInputStream{
      * @param algorithm The Mac algorithm used to calculate the Mac hash.
      * @param seed The seed for the secret key used to calculate the Mac hash.
      * @throws NoSuchAlgorithmException If no Provider supports a MacSpi implementation for the specified algorithm.
-     * @see javax.crypto.spec.SecretKeySpec
+     * @throws InvalidKeyException If the given key is inappropriate for initializing this Mac.
      * @see javax.crypto.Mac
      */
     public MacInputStream(InputStream is, MacAlgorithm algorithm, byte[] seed) throws NoSuchAlgorithmException, InvalidKeyException{

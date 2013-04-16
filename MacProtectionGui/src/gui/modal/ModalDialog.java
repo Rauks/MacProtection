@@ -22,7 +22,9 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 /**
- *
+ * Used to build a JavaFX Modal Stage with messages and buttons. Each button action can be handeled.
+ * Use {@link Stage#showAndWait} to have an Alert behavior.
+ * 
  * @author Karl
  */
 public class ModalDialog extends Stage{
@@ -32,6 +34,9 @@ public class ModalDialog extends Stage{
     private final static int MESSAGE_MIN_WIDTH = 200;
     private final static int MESSAGE_MAX_WIDTH = 800;
     
+    /**
+     * Decribe the Modal stage types (change the icon displayed).
+     */
     public enum ModalType{
         ERROR("ModalError.png"),
         INFO("ModalInfo.png"),
@@ -49,6 +54,10 @@ public class ModalDialog extends Stage{
             return this.img;
         }
     }
+    
+    /**
+     * Decribe the button models addable to this modal stage.
+     */
     public enum ModalButton{
         OK("Ok"),
         CANCEL("Annuler"),
@@ -73,11 +82,24 @@ public class ModalDialog extends Stage{
     private VBox messagesBox;
     private HBox buttonsBox;
     private ImageView icon;
-         
+    
+    /**
+     * Create a new empty Modal stage.
+     * 
+     * @see ModalType
+     * 
+     * @param type The Modal stage type.
+     */
     public ModalDialog(ModalType type){
         this(type, null);
     }
     
+    /**
+     * Create a new empty Modal stage. The {@code closeHandler} is called when there is an external request to close this Window.
+     * 
+     * @param type The Modal stage type.
+     * @param closeHandler Called when there is an external request to close this Window.
+     */
     public ModalDialog(ModalType type, final EventHandler<WindowEvent> closeHandler){
         this.mainPane = new BorderPane();
         
@@ -117,10 +139,21 @@ public class ModalDialog extends Stage{
         });
     }
     
+    /**
+     * Add a button to this Modal stage.
+     * 
+     * @param button The button to add.
+     */
     public void addButton(ModalButton button){
         this.addButton(button, null);
     }
     
+    /**
+     * Add a button to this Modal stage. The {@code handler} is invoked whenever the button is fired.
+     * 
+     * @param button The button to add.
+     * @param handler Invoked whenever the button is fired.
+     */
     public void addButton(ModalButton button, final EventHandler<ActionEvent> handler){
         Button b = button.getButton();
         b.setPrefWidth(BUTTON_PREF_WIDTH);
@@ -136,6 +169,11 @@ public class ModalDialog extends Stage{
         this.buttonsBox.getChildren().add(b);
     }
     
+    /**
+     * Add a message to the Modal stage messages.
+     * 
+     * @param text The message text.
+     */
     public void addMessage(String text){
         Label message = new Label(text);
         message.setWrapText(true);

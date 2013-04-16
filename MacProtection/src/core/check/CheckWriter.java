@@ -11,8 +11,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -45,6 +43,10 @@ public class CheckWriter extends CheckMac{
      * <p/>
      * The folder is serialized, the validation Mac hash is added. The output stream is GZIPed.
      * 
+     * @throws CheckMacException In case of check file structure error. The file is not a check file or may be corrupted.
+     * @throws CheckWriterWritingException In case of file writing error.
+     * @throws NoSuchAlgorithmException If no Provider supports a MacSpi implementation for the specified algorithm.
+     * @throws InvalidKeyException If the given key is inappropriate for initializing this Mac.
      * @see java.util.zip.GZIPOutputStream
      */
     public void write() throws CheckWriterWritingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException{

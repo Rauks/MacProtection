@@ -12,8 +12,6 @@ import java.io.ObjectInputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -45,6 +43,8 @@ public class CheckReader extends CheckMac{
      * 
      * @throws CheckReaderMacException In case of check file rejection. This append when the inner Mac hash and the calculated verification Mac hash differ.
      * @throws CheckReaderReadingException In case of check file structure error. The file is not a check file or may be corrupted.
+     * @throws NoSuchAlgorithmException If no Provider supports a MacSpi implementation for the specified algorithm.
+     * @throws InvalidKeyException If the given key is inappropriate for initializing this Mac.
      */
     public void read() throws CheckReaderReadingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException{
         try(ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(this.in))){
