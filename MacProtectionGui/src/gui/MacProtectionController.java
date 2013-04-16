@@ -333,6 +333,7 @@ public class MacProtectionController implements Initializable {
                         ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                         modal.addButton(ModalDialog.ModalButton.OK);
                         modal.addMessage("Erreur de calcul des hashs Mac.");
+                        modal.addMessage("L'algorithme utilisé requiert un format de password invalide ou est incorrectement implémenté.");
                         modal.showAndWait();
                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Mac Processor failed.");
                     }
