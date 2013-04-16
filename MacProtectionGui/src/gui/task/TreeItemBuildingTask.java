@@ -1,7 +1,5 @@
 package gui.task;
 
-
-import core.processor.MacProcessor;
 import core.tree.Folder;
 import core.tree.HashedFile;
 import gui.tree.ObservableFolder;
@@ -11,8 +9,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.concurrent.Task;
 import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 /*
  * To change this template, choose Tools | Templates
