@@ -173,9 +173,9 @@ public class MacProtectionController implements Initializable {
     @FXML 
     private void handleCheckFileLoading(ActionEvent event){
         File checkFile = this.fileChooser.showOpenDialog(this.getScene().getWindow());
-        this.isProcessing.set(true);
         if(checkFile != null){
             try {
+                this.isProcessing.set(true);
                 CheckReader cr = new CheckReader(new FileInputStream(checkFile), new MacAlgorithm(this.choiceAlgorithm.getValue()), this.choicePassword.getText());
                 cr.read();
                 Folder checkFolder = cr.getRootFolder();
@@ -200,7 +200,7 @@ public class MacProtectionController implements Initializable {
                         }
                     }
                 });
-                treeBuilder.setOnCancelled(new EventHandler(){
+                EventHandler errorHandler = new EventHandler(){
                     @Override
                     public void handle(Event t) {
                         MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
@@ -211,10 +211,13 @@ public class MacProtectionController implements Initializable {
                         modal.showAndWait();
                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Folders building failed.");
                     }
-                });
+                };
+                treeBuilder.setOnCancelled(errorHandler);
+                treeBuilder.setOnFailed(errorHandler);
                 MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                 treeBuilderThread.start();
             } catch (InvalidKeyException ex) {
+                this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Password malformé.");
@@ -228,6 +231,7 @@ public class MacProtectionController implements Initializable {
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (MacAlgorithmException | NoSuchAlgorithmException ex) {
+                this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Algorithme de hash Mac invalide.");
@@ -266,14 +270,14 @@ public class MacProtectionController implements Initializable {
     private void handleLoadRootAction(ActionEvent event) {
         this.dirChooser.setTitle("Racine du dossier");
         File dirToScan = this.dirChooser.showDialog(this.getScene().getWindow());
-        this.isProcessing.set(true);
-        this.rootNode.set(null);
-        this.processorProgress.progressProperty().unbind();
-        this.processorProgress.setProgress(0);
-        this.treeProgress.progressProperty().unbind();
-        this.treeProgress.setProgress(0);
         if(dirToScan != null){
             try {
+                this.isProcessing.set(true);
+                this.rootNode.set(null);
+                this.processorProgress.progressProperty().unbind();
+                this.processorProgress.setProgress(0);
+                this.treeProgress.progressProperty().unbind();
+                this.treeProgress.setProgress(0);
                 this.rootView.setText(dirToScan.getName());
                 final MacProcessorTask processor = new MacProcessorTask(dirToScan, new MacAlgorithm(this.choiceAlgorithm.getValue()), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
                 final Thread processorThread = new Thread(processor);
@@ -300,15 +304,17 @@ public class MacProtectionController implements Initializable {
                                         modal.addMessage("Calculs terminés.");
                                         modal.showAndWait();
                                     } catch (InterruptedException | ExecutionException ex) {
+                                        rootView.setText("");
                                         isProcessing.set(false);
                                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
                                     }
                                 }
                             });
-                            treeBuilder.setOnCancelled(new EventHandler(){
+                            EventHandler errorHandler = new EventHandler(){
                                 @Override
                                 public void handle(Event t) {
                                     MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
+                                    rootView.setText("");
                                     isProcessing.set(false);
                                     ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                                     modal.addButton(ModalDialog.ModalButton.OK);
@@ -316,19 +322,23 @@ public class MacProtectionController implements Initializable {
                                     modal.showAndWait();
                                     Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Folders tree building failed.");
                                 }
-                            });
+                            };
+                            treeBuilder.setOnCancelled(errorHandler);
+                            treeBuilder.setOnFailed(errorHandler);
                             MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                             treeBuilderThread.start();
                         } catch (InterruptedException | ExecutionException ex) {
-                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+                            rootView.setText("");
                             isProcessing.set(false);
+                            Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 });
-                processor.setOnCancelled(new EventHandler(){
+                EventHandler errorHandler = new EventHandler(){
                     @Override
                     public void handle(Event t) {
                         MacProtectionGui.WORKING_THREADS.remove(processorThread);
+                        rootView.setText("");
                         isProcessing.set(false);
                         ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                         modal.addButton(ModalDialog.ModalButton.OK);
@@ -337,10 +347,14 @@ public class MacProtectionController implements Initializable {
                         modal.showAndWait();
                         Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, "Mac Processor failed.");
                     }
-                });
+                };
+                processor.setOnCancelled(errorHandler);
+                processor.setOnFailed(errorHandler);
                 MacProtectionGui.WORKING_THREADS.add(processorThread);
                 processorThread.start();
             } catch (MacAlgorithmException ex) {
+                this.rootView.setText("");
+                this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Algorithme de hash Mac invalide.");
@@ -349,12 +363,12 @@ public class MacProtectionController implements Initializable {
             } catch (MacProcessorException ex) {
                 this.rootView.setText("");
                 this.isProcessing.set(false);
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Dossier à scanner invalide.");
+                modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else{
-            this.rootView.setText("");
-            this.isProcessing.set(false);
         }
     }
     
