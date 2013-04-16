@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +66,7 @@ public class MacProtection {
                 CheckWriter cw = new CheckWriter(new FileOutputStream(new File("check.test")), physicalRoot, algorithm, key);
                 cw.write();
                 System.out.println("DONE.");
-            } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
+            } catch (FileNotFoundException | CheckWriterWritingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
             }
             
@@ -76,17 +78,14 @@ public class MacProtection {
                 cr.read();
                 validationFolder = cr.getRootFolder();
                 System.out.println("DONE.");
-            } catch (CheckMacException | CheckReaderReadingException | FileNotFoundException ex) {
+            } catch (FileNotFoundException | CheckReaderReadingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {
                 Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+            }            
             //Physical directory validation
             System.out.println("VALIDATION RESULT : ");
             System.out.println(physicalRoot.isConformTo(validationFolder));
             
-        } catch (MacProcessorException ex) {
-            Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MacAlgorithmException ex) {
+        } catch (MacProcessorException | MacAlgorithmException ex) {
             Logger.getLogger(MacProtection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

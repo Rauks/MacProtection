@@ -105,6 +105,21 @@ public class MacProtectionController implements Initializable {
     }
     
     /**
+     * Show the about window.
+     * 
+     * @param event The {@link ActionEvent} associated. 
+     */
+    @FXML
+    public void handleAbout(ActionEvent event){
+        ModalDialog modal = new ModalDialog(ModalDialog.ModalType.INFO);
+        modal.addButton(ModalDialog.ModalButton.OK);
+        modal.addMessage("Utilitaire de Protection d’un Système de Fichier par hash Mac.");
+        modal.addMessage("Projet de Sécurité & Cryptographie, ENSISA 2A IR.");
+        modal.addMessage("Réalisé par Karl Woditsch & Georges Olivarès.");
+        modal.showAndWait();
+    }
+    
+    /**
      * Create a check file.
      * 
      * @param event The {@link ActionEvent} associated. 
@@ -141,7 +156,6 @@ public class MacProtectionController implements Initializable {
      * 
      * @param event The {@link ActionEvent} associated. 
      */
-    
     @FXML 
     private void handleCheckFileLoading(ActionEvent event){
         File checkFile = this.fileChooser.showOpenDialog(this.getScene().getWindow());

@@ -127,7 +127,7 @@
                     </ImageView>
                   </graphic>
                 </MenuItem>
-                <MenuItem mnemonicParsing="false" text="Valider la racine" fx:id="menuCheckRead">
+                <MenuItem mnemonicParsing="false" onAction="#handleCheckFileLoading" text="Valider la racine" fx:id="menuCheckRead">
                   <graphic>
                     <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                       <image>

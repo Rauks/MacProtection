@@ -9,6 +9,8 @@ import core.tree.Folder;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPOutputStream;
@@ -45,15 +47,13 @@ public class CheckWriter extends CheckMac{
      * 
      * @see java.util.zip.GZIPOutputStream
      */
-    public void write() throws CheckWriterWritingException, CheckMacException{
+    public void write() throws CheckWriterWritingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException{
         try(ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(this.out))){
                 byte[] hash = this.getCheckMac(this.folder);
                 oos.writeInt(hash.length);
                 oos.write(hash);
                 oos.writeObject(this.folder);
                 oos.flush();
-        } catch (CheckMacException ex) {
-            throw new CheckMacException("Invalid check file Mac hash.");
         } catch (IOException ex) {
             throw new CheckWriterWritingException("Error in check file writing.");
         }
