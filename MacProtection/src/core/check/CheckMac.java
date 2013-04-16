@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,21 +37,15 @@ public abstract class CheckMac {
      * @return The Mac hash in bytes array form.
      * @see javax.crypto.Mac
      */
-    protected byte[] getCheckMac(Serializable object) throws CheckMacException{
-        try {
-            File temp = File.createTempFile("mac", null);
-            temp.deleteOnExit();
-            try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(temp))){
-                oos.writeObject(object);
-                oos.flush();
-            }
-            try(MacInputStream mis = new MacInputStream(new FileInputStream(temp), this.algorithm, this.key.getBytes())){
-                return mis.getMacBytes();
-            } catch (NoSuchAlgorithmException ex) {
-                throw new CheckMacException("No such Mac algorithm.");
-            }
-        } catch (IOException ex) {
-            throw new CheckMacException("Error in Mac calculation.");
+    protected byte[] getCheckMac(Serializable object) throws IOException, NoSuchAlgorithmException, InvalidKeyException{
+        File temp = File.createTempFile("mac", null);
+        temp.deleteOnExit();
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(temp))){
+            oos.writeObject(object);
+            oos.flush();
+        }
+        try(MacInputStream mis = new MacInputStream(new FileInputStream(temp), this.algorithm, this.key.getBytes())){
+            return mis.getMacBytes();
         }
     }
 }

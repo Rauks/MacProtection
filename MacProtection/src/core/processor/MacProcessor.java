@@ -12,6 +12,7 @@ import core.tree.HashedFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -118,7 +119,7 @@ public class MacProcessor {
                             }
                             incrProcessedFiles();
                             fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
-                        } catch (IOException | NoSuchAlgorithmException | TreeElementException ex) {
+                        } catch (IOException | NoSuchAlgorithmException | TreeElementException | InvalidKeyException ex) {
                             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
                             incrEncouredErrors();
                         }

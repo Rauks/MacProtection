@@ -48,8 +48,9 @@ public class MacAlgorithm {
         for (int i = 0; i != providers.length; i++) {
             for(Iterator<Object> it = providers[i].keySet().iterator(); it.hasNext();){
                 String entry = (String) it.next();
-                if (entry.startsWith("Mac.") && !entry.endsWith(" SupportedKeyFormats")) {
-                    macs.add(entry.substring("Mac.".length()));
+                if (entry.startsWith("Mac.") && entry.endsWith(" SupportedKeyFormats")) {
+                    entry = entry.substring(4);
+                    macs.add(entry.substring(0, entry.length() - 20));
                 }
             }
         }

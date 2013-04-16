@@ -9,6 +9,8 @@ import core.tree.Folder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +46,7 @@ public class CheckReader extends CheckMac{
      * @throws CheckReaderMacException In case of check file rejection. This append when the inner Mac hash and the calculated verification Mac hash differ.
      * @throws CheckReaderReadingException In case of check file structure error. The file is not a check file or may be corrupted.
      */
-    public void read() throws CheckReaderReadingException, CheckMacException{
+    public void read() throws CheckReaderReadingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException{
         try(ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(this.in))){
             int hashSize = ois.readInt();
             byte[] filigramHash = new byte[hashSize];
