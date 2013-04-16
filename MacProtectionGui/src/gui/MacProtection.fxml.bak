@@ -148,6 +148,11 @@
                 </MenuItem>
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="?">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="A propos..." />
+              </items>
+            </Menu>
           </menus>
         </MenuBar>
       </top>

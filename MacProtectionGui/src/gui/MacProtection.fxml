@@ -150,7 +150,15 @@
             </Menu>
             <Menu mnemonicParsing="false" text="?">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="A propos..." />
+                <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="A propos...">
+                  <graphic>
+                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                        <Image url="@res/menuAbout.png" preserveRatio="false" smooth="false" />
+                      </image>
+                    </ImageView>
+                  </graphic>
+                </MenuItem>
               </items>
             </Menu>
           </menus>
