@@ -122,6 +122,7 @@ public class MacProcessor {
                         } catch (IOException | NoSuchAlgorithmException | TreeElementException | InvalidKeyException ex) {
                             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
                             incrEncouredErrors();
+                            executor.shutdownNow();
                         }
                     }
                 });
@@ -160,14 +161,14 @@ public class MacProcessor {
             this.executor.shutdown();
             this.executor.awaitTermination(1, TimeUnit.DAYS);
             if(this.encouredErrors != 0){
-                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
+                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
             }
             else{
                 this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
             }
         } catch (InterruptedException | MacProcessorException ex) {
             this.executor.shutdownNow();
-            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELED);
+            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
         

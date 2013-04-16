@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -135,13 +137,25 @@ public class MacProtectionController implements Initializable {
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Fichier de validation créé.");
                 modal.showAndWait();
-            } catch (MacAlgorithmException ex) {
+            } catch (CheckMacException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Erreur de creation du hash de signature Mac.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeyException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Password malformé.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MacAlgorithmException | NoSuchAlgorithmException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Algorithme de hash Mac invalide.");
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
+            } catch (CheckWriterWritingException | FileNotFoundException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Erreur d'écriture du fichier de validation.");
@@ -186,7 +200,7 @@ public class MacProtectionController implements Initializable {
                         }
                     }
                 });
-                treeBuilder.setOnFailed(new EventHandler(){
+                treeBuilder.setOnCancelled(new EventHandler(){
                     @Override
                     public void handle(Event t) {
                         MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
@@ -200,6 +214,12 @@ public class MacProtectionController implements Initializable {
                 });
                 MacProtectionGui.WORKING_THREADS.add(treeBuilderThread);
                 treeBuilderThread.start();
+            } catch (InvalidKeyException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Password malformé.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (FileNotFoundException | CheckReaderReadingException ex) {
                 this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
@@ -207,7 +227,7 @@ public class MacProtectionController implements Initializable {
                 modal.addMessage("Erreur de lecture du fichier de validation.");
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (MacAlgorithmException ex) {
+            } catch (MacAlgorithmException | NoSuchAlgorithmException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Algorithme de hash Mac invalide.");
@@ -285,7 +305,7 @@ public class MacProtectionController implements Initializable {
                                     }
                                 }
                             });
-                            treeBuilder.setOnFailed(new EventHandler(){
+                            treeBuilder.setOnCancelled(new EventHandler(){
                                 @Override
                                 public void handle(Event t) {
                                     MacProtectionGui.WORKING_THREADS.remove(treeBuilderThread);
@@ -305,7 +325,7 @@ public class MacProtectionController implements Initializable {
                         }
                     }
                 });
-                processor.setOnFailed(new EventHandler(){
+                processor.setOnCancelled(new EventHandler(){
                     @Override
                     public void handle(Event t) {
                         MacProtectionGui.WORKING_THREADS.remove(processorThread);

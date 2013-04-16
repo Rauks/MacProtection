@@ -14,7 +14,7 @@ public class MacProcessorEvent {
      * Used to describe the processing state of the {@link MacProcessor}.
      * The {@link ProcessinsState} is {@code STARTED} on processing process starting then {@code STARTED} during the process and finally {@code FINISHED} at the end. In case of processor error the state is {@code CANCELED}.
      */
-    public enum ProcessingState{STARTED, RUNNING, FINISHED, CANCELED}
+    public enum ProcessingState{STARTED, RUNNING, FINISHED, CANCELLED}
     
     private int totalFiles;
     private int processedFiles;

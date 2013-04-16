@@ -57,8 +57,9 @@ public class MacProcessorTask extends Task{
                     case RUNNING:
                         progress.set((double)evt.getProcessedFiles() / (double)evt.getTotalFiles());
                         break;
-                    case CANCELED:
+                    case CANCELLED:
                         progress.set(0d);
+                        cancel();
                         break;
                     case STARTED:
                         progress.set(0d);
