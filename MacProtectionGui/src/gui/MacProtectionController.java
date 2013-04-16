@@ -8,6 +8,7 @@ package gui;
 import gui.task.TreeItemBuildingTask;
 import gui.task.MacProcessorTask;
 import core.MacAlgorithm;
+import core.MacAlgorithmException;
 import core.check.CheckMacException;
 import core.check.CheckReader;
 import core.check.CheckReaderReadingException;
@@ -113,12 +114,18 @@ public class MacProtectionController implements Initializable {
         File fileToSave = this.fileChooser.showSaveDialog(this.getScene().getWindow());
         if(fileToSave != null){
             try {
-                CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+                CheckWriter cw = new CheckWriter(new FileOutputStream(fileToSave), this.rootNode.get().getValue().getFolder(), new MacAlgorithm(this.choiceAlgorithm.getValue()), this.choicePassword.getText());
                 cw.write();
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
                 modal.addButton(ModalDialog.ModalButton.OK);
                 modal.addMessage("Fichier de validation créé.");
                 modal.showAndWait();
+            } catch (MacAlgorithmException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Algorithme de hash Mac invalide.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (CheckWriterWritingException | CheckMacException | FileNotFoundException ex) {
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
                 modal.addButton(ModalDialog.ModalButton.OK);
@@ -135,7 +142,7 @@ public class MacProtectionController implements Initializable {
         this.isProcessing.set(true);
         if(checkFile != null){
             try {
-                CheckReader cr = new CheckReader(new FileInputStream(checkFile), this.choiceAlgorithm.getValue(), this.choicePassword.getText());
+                CheckReader cr = new CheckReader(new FileInputStream(checkFile), new MacAlgorithm(this.choiceAlgorithm.getValue()), this.choicePassword.getText());
                 cr.read();
                 Folder checkFolder = cr.getRootFolder();
                 final CheckedTreeItemBuildingTask treeBuilder = new CheckedTreeItemBuildingTask(this.rootNode.get().getValue().getFolder(), checkFolder);
@@ -180,6 +187,12 @@ public class MacProtectionController implements Initializable {
                 modal.addMessage("Erreur de lecture du fichier de validation.");
                 modal.showAndWait();
                 Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MacAlgorithmException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Algorithme de hash Mac invalide.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (CheckMacException ex) {
                 this.isProcessing.set(false);
                 ModalDialog modal = new ModalDialog(ModalDialog.ModalType.ERROR);
@@ -222,7 +235,7 @@ public class MacProtectionController implements Initializable {
         if(dirToScan != null){
             try {
                 this.rootView.setText(dirToScan.getName());
-                final MacProcessorTask processor = new MacProcessorTask(dirToScan, this.choiceAlgorithm.getValue(), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
+                final MacProcessorTask processor = new MacProcessorTask(dirToScan, new MacAlgorithm(this.choiceAlgorithm.getValue()), this.choicePassword.getText(), MacProcessor.MacOutput.HEXADECIMAL);
                 final Thread processorThread = new Thread(processor);
                 this.processorProgress.progressProperty().bind(processor.processProgressProperty());
                 processor.setOnSucceeded(new EventHandler(){
@@ -286,6 +299,12 @@ public class MacProtectionController implements Initializable {
                 });
                 MacProtectionGui.WORKING_THREADS.add(processorThread);
                 processorThread.start();
+            } catch (MacAlgorithmException ex) {
+                ModalDialog modal = new ModalDialog(ModalDialog.ModalType.VALID);
+                modal.addButton(ModalDialog.ModalButton.OK);
+                modal.addMessage("Algorithme de hash Mac invalide.");
+                modal.showAndWait();
+                Logger.getLogger(MacProtectionController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (MacProcessorException ex) {
                 this.rootView.setText("");
                 this.isProcessing.set(false);
@@ -307,7 +326,7 @@ public class MacProtectionController implements Initializable {
     @FXML
     private MenuItem menuQuit;
     @FXML
-    private ChoiceBox<MacAlgorithm> choiceAlgorithm;
+    private ChoiceBox<String> choiceAlgorithm;
     @FXML
     private PasswordField choicePassword;
     @FXML
@@ -334,10 +353,9 @@ public class MacProtectionController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //User choices
-        ObservableList<MacAlgorithm> algorithms = FXCollections.observableArrayList();
-        algorithms.addAll(MacAlgorithm.getAlgorithms());
+        ObservableList<String> algorithms = FXCollections.observableArrayList();
+        algorithms.addAll(MacAlgorithm.AVAILABLE_ALGORITHMS);
         this.choiceAlgorithm.setItems(algorithms);
-        this.choiceAlgorithm.setValue(MacAlgorithm.HmacSHA256);
         
         this.dirChooser = new DirectoryChooser();
         this.fileChooser = new FileChooser();
