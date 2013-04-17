@@ -47,7 +47,7 @@ public class ModalDialog extends Stage{
         private Image img;
         
         private ModalType(String img){
-            this.img = new Image(ModalType.class.getResource("res/" + img).toExternalForm());
+            this.img = new Image(ModalDialog.class.getResourceAsStream("res/" + img));
         }
         
         private Image getImage(){

@@ -457,7 +457,7 @@ public class MacProtectionController implements Initializable {
             }
         });
         this.treeView.setCellFactory(new Callback<TreeView<ObservableFolder>, TreeCell<ObservableFolder>>() {
-            private Image nodeImage = new Image(TreeItemBuildingTask.class.getResourceAsStream("/gui/res/folder.png"));
+            private Image nodeImage = new Image(MacProtectionController.class.getResourceAsStream("res/folder.png"));
             
             @Override
             public TreeCell<ObservableFolder> call(TreeView<ObservableFolder> param) {
