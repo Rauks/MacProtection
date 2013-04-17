@@ -98,7 +98,7 @@ public class MacProcessor {
      */
     private Folder initFolder(File dir) throws MacProcessorException{
         if(!dir.isDirectory()){
-            throw new MacProcessorException("Folder creation error during the processing.");
+            throw new MacProcessorException("The folder to scan is not a folder.");
         }
         
         final Folder f = new Folder(dir.getName());
@@ -121,8 +121,11 @@ public class MacProcessor {
                             fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
                         } catch (IOException | NoSuchAlgorithmException | TreeElementException | InvalidKeyException ex) {
                             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                            incrEncouredErrors();
-                            executor.shutdownNow();
+                            if(encouredErrors == 0){ //Error already detected, cancel event already send.
+                                incrEncouredErrors();
+                                executor.shutdownNow();
+                                fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
+                            }
                         }
                     }
                 });
@@ -136,7 +139,7 @@ public class MacProcessor {
                 }
             }
         }
-        this.processedFiles++;
+        incrProcessedFiles();
         this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.RUNNING);
         return f;
     }
@@ -160,15 +163,14 @@ public class MacProcessor {
             this.root = this.initFolder(this.dirToScan);
             this.executor.shutdown();
             this.executor.awaitTermination(1, TimeUnit.DAYS);
-            if(this.encouredErrors != 0){
-                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
-            }
-            else{
+            if(this.encouredErrors == 0){ //Error detected, cancel event sended.
                 this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.FINISHED);
             }
         } catch (InterruptedException | MacProcessorException ex) {
-            this.executor.shutdownNow();
-            this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
+            if(this.encouredErrors == 0){ //Error already detected in workers, cancel event already send.
+                this.executor.shutdownNow();
+                this.fireMacProcessorListenerEvent(MacProcessorEvent.ProcessingState.CANCELLED);
+            }
             Logger.getLogger(MacProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
