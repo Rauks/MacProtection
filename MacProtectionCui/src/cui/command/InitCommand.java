@@ -9,7 +9,7 @@ import com.martiansoftware.jsap.JSAPResult;
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
-public class MacProtectionCommandInit implements MacProtectionCommand {
+public class InitCommand implements MacProtectionCommand {
 
     @Override
     public JSAP initCall() throws JSAPException {
