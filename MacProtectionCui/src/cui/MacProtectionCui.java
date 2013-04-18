@@ -10,7 +10,7 @@ public class MacProtectionCui {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MacProtectionCui();
+        new MacProtectionCui();
     }
 
     MacProtectionCui() {
