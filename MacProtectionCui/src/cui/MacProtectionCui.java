@@ -1,7 +1,4 @@
-/*
- * 
- */
-package macprotectioncui;
+package cui;
 
 /**
  *
