@@ -1,6 +1,5 @@
 package cui.command;
 
-import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
@@ -28,6 +27,7 @@ public class HelpCommand implements MacProtectionCommand {
 
         for (Map.Entry<String, MacProtectionCommand> entry : MacProtectionCui.getCommands().entrySet()) {
             try {
+                System.out.print("\t");
                 System.out.print(entry.getKey());
                 System.out.print("\t");
                 System.out.print(entry.getValue().initCall().getUsage());
