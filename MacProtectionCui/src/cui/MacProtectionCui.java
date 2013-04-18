@@ -3,8 +3,6 @@ package cui;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import cui.command.HelpCommand;
-import cui.command.InitCommand;
 import cui.command.MacProtectionCommand;
 import java.util.TreeMap;
 
@@ -27,8 +25,12 @@ public class MacProtectionCui {
 
     MacProtectionCui() {
         // initialize the commands
-        MacProtectionCui.commands.put("init", new InitCommand());
-        MacProtectionCui.commands.put("help", new HelpCommand());
+        MacProtectionCui.commands.put("init", new cui.command.InitCommand());
+        MacProtectionCui.commands.put("ls", new cui.command.LsCommand());
+        MacProtectionCui.commands.put("show", new cui.command.ShowCommand());
+        MacProtectionCui.commands.put("diff", new cui.command.DiffCommand());
+        MacProtectionCui.commands.put("export", new cui.command.ExportCommand());
+        MacProtectionCui.commands.put("help", new cui.command.HelpCommand());
     }
 
     public static void callFactory(String string, String[] args) throws CuiMessageException {
