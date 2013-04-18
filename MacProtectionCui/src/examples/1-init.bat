@@ -1,2 +1,2 @@
-java -jar ../../dist/MacProtectionCui.jar init
+java -jar ../../dist/MacProtectionCui.jar init a -b --c=d
 Pause
