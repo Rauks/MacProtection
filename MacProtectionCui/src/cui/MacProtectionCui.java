@@ -3,11 +3,10 @@ package cui;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import cui.command.MacProtectionCommandInit;
+import cui.command.HelpCommand;
+import cui.command.InitCommand;
 import cui.command.MacProtectionCommand;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -15,32 +14,44 @@ import java.util.logging.Logger;
  */
 public class MacProtectionCui {
 
-    protected TreeMap<String, MacProtectionCommand> commands = new TreeMap<>();
+    public static TreeMap<String, MacProtectionCommand> commands = new TreeMap<>();
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         new MacProtectionCui();
+
+        // @TODO add interactive console
     }
 
     MacProtectionCui() {
-        commands.put("init", new MacProtectionCommandInit());
+        // initialize the commands
+        MacProtectionCui.commands.put("init", new InitCommand());
+        MacProtectionCui.commands.put("help", new HelpCommand());
     }
 
     public static void callFactory(String string, String[] args) throws CuiMessageException {
 
         MacProtectionCui MPC = new MacProtectionCui();
 
-        if (!MPC.getCommands().containsKey(string)) {
+        // Check if user command exists
+        if (!MacProtectionCui.getCommands().containsKey(string)) {
             throw new CuiMessageException("Unknown command");
         }
 
         try {
-            MacProtectionCommand command = MPC.getCommands().get(string);
+            MacProtectionCommand command = MacProtectionCui.getCommands().get(string);
             JSAP jsap;
             jsap = command.initCall();
             JSAPResult config = jsap.parse(args);
+
+            // print out specific error messages describing the problems
+            // with the command line, THEN print usage, THEN print full
+            // help.  This is called "beating the user with a clue stick."
+            for (java.util.Iterator errs = config.getErrorMessageIterator(); errs.hasNext();) {
+                System.err.println("Error: " + errs.next());
+            }
 
             // check whether the command line was valid, and if it wasn't,
             // display usage information and exit.
@@ -52,13 +63,14 @@ public class MacProtectionCui {
                 System.exit(1);
             }
 
+            // execute the command
             command.process(config);
         } catch (JSAPException ex) {
-            System.out.println(ex);
+            throw new CuiMessageException(ex);
         }
     }
 
-    public TreeMap<String, MacProtectionCommand> getCommands() {
-        return this.commands;
+    public static TreeMap<String, MacProtectionCommand> getCommands() {
+        return MacProtectionCui.commands;
     }
 }
