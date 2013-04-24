@@ -111,10 +111,10 @@ public class MacProcessor {
                             mis.readAll();
                             switch(macOutput){
                                 case BASE64:
-                                    f.addFile(new HashedFile(file.getName(), mis.getMacBase64(), file.length()));
+                                    f.addFile(new HashedFile(file, mis.getMacBase64()));
                                     break;
                                 case HEXADECIMAL:
-                                    f.addFile(new HashedFile(file.getName(), mis.getMacHex(), file.length()));
+                                    f.addFile(new HashedFile(file, mis.getMacHex()));
                                     break;
                             }
                             incrProcessedFiles();

@@ -66,7 +66,7 @@ public class CheckedTreeItemBuildingTask extends Task{
             for(Iterator<HashedFile> it = folder.getFiles().iterator(); it.hasNext();){
                 HashedFile file = it.next();
                 ObservableHashedFile oFile;
-                oFile = new ObservableHashedFile(new HashedFile(file.getName(), "", file.getSize()));
+                oFile = new ObservableHashedFile(new HashedFile(file));
                 oFile.setFlag(CheckingFlag.ADDED);
                 oFolder.addObservableHashedFile(oFile);
             }
@@ -89,7 +89,7 @@ public class CheckedTreeItemBuildingTask extends Task{
                 HashedFile cFile = check.getFile(file.getName());
                 if(cFile == null){ 
                     //File added
-                    oFile = new ObservableHashedFile(new HashedFile(file.getName(), "", file.getSize()));
+                    oFile = new ObservableHashedFile(new HashedFile(file));
                     oFile.setFlag(CheckingFlag.ADDED);
                 }
                 else{ 
@@ -103,7 +103,7 @@ public class CheckedTreeItemBuildingTask extends Task{
             for(Iterator<HashedFile> it = check.getFiles().iterator(); it.hasNext();){
                 HashedFile cFile = it.next();
                 if(folder.getFile(cFile.getName()) == null){
-                    ObservableHashedFile delFile = new ObservableHashedFile(new HashedFile(cFile.getName(), "", cFile.getSize()));
+                    ObservableHashedFile delFile = new ObservableHashedFile(new HashedFile(cFile));
                     delFile.setCheckHash(cFile.getHash());
                     delFile.setFlag(CheckingFlag.DELETED);
                     oFolder.addObservableHashedFile(delFile);

@@ -4,6 +4,7 @@
  */
 package core.tree;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -20,24 +21,35 @@ public class HashedFile extends ParentedTreeElement implements Serializable{
     private long size;
 
     /**
-     * Create a {@code HashedFile} with a {@code name}, his {@code hash} and his {@code size}.
+     * Create a {@code HashedFile} from a {@code file} and his {@code hash}.
      * 
      * @param name The name of the file.
      * @param hash The hash of the file.
      */
-    public HashedFile(String name, String hash, long size) {
-        this.name = name;
+    public HashedFile(File file, String hash) {
+        this.name = file.getName();
+        this.size = file.length();
         this.hash = hash;
-        this.size = size;
     }
 
     /**
-     * Create a {@code HashedFile} with a {@code name} and his {@code size}, the hash will be {@code null}.
+     * Create a {@code HashedFile} from a {@code file}, the hash will be {@code null}.
      * 
      * @param name The name of the file.
      */
-    public HashedFile(String name, long size) {
-        this(name, null, size);
+    public HashedFile(File file) {
+        this(file, null);
+    }
+    
+    /**
+     * Create a {@code HashedFile} from another {@code hashedFile}. Can be used to make a copy of a {@code HashedFile}.
+     * 
+     * @param name The name of the file.
+     */
+    public HashedFile(HashedFile hashedFile) {
+        this.name = hashedFile.name;
+        this.size = hashedFile.size;
+        this.hash = hashedFile.hash;
     }
     
     /**
