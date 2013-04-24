@@ -4,11 +4,13 @@
  */
 package core.tree;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Karl
  */
-abstract class ParentedTreeElement {
+abstract class ParentedTreeElement implements Serializable {
     private Folder parent = null;
     
     /**
