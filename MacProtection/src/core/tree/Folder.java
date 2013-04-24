@@ -190,6 +190,7 @@ public class Folder extends ParentedTreeElement implements Serializable{
      * To be equals, the folder structure must be the same between the current folder and the {@code other}, 
      * the contained files, sub-folders and parents must be equals to.
      * 
+     * @warning The parents are not checked. Two equals {@code Folders} with differents parents can be equals.
      * @param obj The reference object with which to compare.
      * @return {true} if the objetcs are "equals".
      */

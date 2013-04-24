@@ -119,8 +119,9 @@ public class HashedFile extends ParentedTreeElement implements Serializable{
     }
 
     /**
-     * Indicates whether some other object is "equal to" this one. A {@code HashFile} is equals to another if they have the same {@code name} and {@code hash}.
+     * Indicates whether some other object is "equal to" this one. A {@code HashedFile} is equals to another if they have the same {@code name} and {@code hash}.
      * 
+     * @warning The parents are not checked. Two equals {@code HashedFile} with differents parents can be equals.
      * @param obj The reference object with which to compare.
      * @return {true} if the objetcs are "equals".
      */
