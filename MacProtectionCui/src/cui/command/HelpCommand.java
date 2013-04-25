@@ -53,11 +53,11 @@ public class HelpCommand implements MacProtectionCommand {
             for (Map.Entry<String, MacProtectionCommand> entry : MacProtectionCui.getCommands().entrySet()) {
                 try {
                     JSAP jsap = entry.getValue().initCall();
-                    System.out.print("   ");
+                    System.out.print("\t");
                     System.out.print(entry.getKey());
                     System.out.print("\t");
                     System.out.print(jsap.getUsage());
-                    System.out.println("\n");
+                    System.out.println();
                 } catch (JSAPException ex) {
                     Logger.getLogger(HelpCommand.class.getName()).log(Level.SEVERE, null, ex);
                 }

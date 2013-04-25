@@ -84,7 +84,6 @@ public class ShowCommand implements MacProtectionCommand {
             
             DetailedTree detailedTree = new DetailedTree(physicalRoot);
 
-            //if( physicalRoot.getFile(opt_algo))
             for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(physicalRoot).entrySet().iterator(); it.hasNext();) {
                 Map.Entry<String, FileWithState> en = it.next();
                 if( en.getValue().isHashedFile() ) {

@@ -73,12 +73,12 @@ public class DiffCommand implements MacProtectionCommand {
     public void process(JSAPResult config) {
 
         try {
-            String opt_dirToScan = config.getString("source");
+            String opt_source = config.getString("source");
             String opt_password = config.getString("password");
             String opt_algo = config.getString("algo");
-            String opt_file = config.getString("check_file");
+            String opt_check_file = config.getString("check_file");
 
-            File dirToScan = new File(opt_dirToScan);
+            File dirToScan = new File(opt_source);
             MacAlgorithm algorithm;
 
             algorithm = new MacAlgorithm(opt_algo);
@@ -90,7 +90,7 @@ public class DiffCommand implements MacProtectionCommand {
             Folder physicalRoot = p.getResult();
 
             //Get a folder tree from the validation file
-            CheckReader cr = MacProtectionActionsFactory.checkReader(opt_file, algorithm, opt_password);
+            CheckReader cr = MacProtectionActionsFactory.checkReader(opt_check_file, algorithm, opt_password);
             Folder validationFolder = cr.getRootFolder();
 
             //Physical directory validation
