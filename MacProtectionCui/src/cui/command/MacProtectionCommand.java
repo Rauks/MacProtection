@@ -13,4 +13,6 @@ public interface MacProtectionCommand {
     public JSAP initCall() throws JSAPException;
 
     public void process(JSAPResult config);
+
+    public String getDescription();
 }

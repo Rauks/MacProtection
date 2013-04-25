@@ -68,4 +68,9 @@ public class ShowCommand implements MacProtectionCommand {
             System.err.println(ex.getMessage());
         }
     }
+    
+    @Override
+    public String getDescription() {
+        return "Show informations about the folder (state, checksum, ...)";
+    }
 }

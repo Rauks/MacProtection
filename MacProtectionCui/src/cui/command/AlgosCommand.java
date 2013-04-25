@@ -26,4 +26,9 @@ public class AlgosCommand implements MacProtectionCommand {
             System.out.println(" - " + alg);
         }
     }
+
+    @Override
+    public String getDescription() {
+        return "List all algorithms";
+    }
 }

@@ -33,7 +33,7 @@ public class DiffCommand implements MacProtectionCommand {
     @Override
     public JSAP initCall() throws JSAPException {
         JSAP jsap = new JSAP();
-        
+
         MacProtectionOptionsFactory.password(jsap);
         MacProtectionOptionsFactory.algorithm(jsap);
         MacProtectionOptionsFactory.checkFile(jsap);
@@ -94,5 +94,10 @@ public class DiffCommand implements MacProtectionCommand {
         } catch (MacProcessorException | MacAlgorithmException ex) {
             System.err.println(ex.getMessage());
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Show changes between source directory and checkfile";
     }
 }

@@ -75,4 +75,9 @@ public class ExportCommand implements MacProtectionCommand {
             System.err.println(ex.getMessage());
         }
     }
+    
+    @Override
+    public String getDescription() {
+        return "Export checkfile of source folder";
+    }
 }
