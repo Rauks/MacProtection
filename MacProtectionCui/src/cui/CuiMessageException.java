@@ -8,12 +8,11 @@ import com.martiansoftware.jsap.JSAPException;
  */
 class CuiMessageException extends Exception {
 
-    CuiMessageException(String message) {
+    public CuiMessageException(String message) {
         super(message);
     }
 
-    CuiMessageException(JSAPException ex) {
+    public CuiMessageException(JSAPException ex) {
         super(ex);
     }
-    
 }

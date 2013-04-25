@@ -19,15 +19,26 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Different actions used into {@link MacProtectionCommand}
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
 public class MacProtectionActionsFactory {
 
-    public static MacProcessor scanDirectory(File dirToScan, MacAlgorithm algorithm, String opt_password, MacProcessor.MacOutput mcOutput) throws MacProcessorException {
+    /**
+     * Scan {@code dirToScan} with {@code algorithm} and {@code password}
+     *
+     * @param dirToScan Directory to scan
+     * @param algorithm Algorihm to use
+     * @param password Password used to crypt datas
+     * @param mcOutput
+     * @return {@link MacProcessor}
+     * @throws MacProcessorException
+     */
+    public static MacProcessor scanDirectory(File dirToScan, MacAlgorithm algorithm, String password, MacProcessor.MacOutput mcOutput) throws MacProcessorException {
         System.out.println();
 
-        MacProcessor p = new MacProcessor(dirToScan, algorithm, opt_password, mcOutput);
+        MacProcessor p = new MacProcessor(dirToScan, algorithm, password, mcOutput);
 
         p.addMacProcessorListener(new MacProcessorListener() {
             private int state_process = 0;
@@ -56,25 +67,52 @@ public class MacProtectionActionsFactory {
         return p;
     }
 
-    public static CheckReader checkReader(String opt_file, MacAlgorithm algorithm, String opt_password) throws FileNotFoundException, CheckReaderReadingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException {
+    /**
+     * Check {@code checkFile}
+     *
+     * @param checkFile Check file
+     * @param algorithm Algorihm to use
+     * @param password Password used to crypt datas
+     * @return {@link CheckReader}
+     * @throws FileNotFoundException
+     * @throws CheckReaderReadingException
+     * @throws CheckMacException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     */
+    public static CheckReader checkReader(String checkFile, MacAlgorithm algorithm, String password) throws FileNotFoundException, CheckReaderReadingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException {
         System.out.println();
-        System.out.println("Compare with check file '" + opt_file + "' ... ");
+        System.out.println("Compare with check file '" + checkFile + "' ... ");
 
         System.out.print("\tReading ... ");
-        CheckReader cr = new CheckReader(new FileInputStream(new File(opt_file)), algorithm, opt_password);
+        CheckReader cr = new CheckReader(new FileInputStream(new File(checkFile)), algorithm, password);
         cr.read();
         System.out.println(" DONE !");
 
         return cr;
     }
 
-    public static CheckWriter checkWriter(String opt_file, Folder physicalRoot, MacAlgorithm algorithm, String opt_password) throws FileNotFoundException, CheckWriterWritingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException {
+    /**
+     * Create and write the {@code checkFile}
+     *
+     * @param checkFile File to save
+     * @param physicalRoot {@link Folder} to write
+     * @param algorithm Algorihm to use
+     * @param password Password used to crypt datas
+     * @return {@link CheckWriter}
+     * @throws FileNotFoundException
+     * @throws CheckWriterWritingException
+     * @throws CheckMacException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     */
+    public static CheckWriter checkWriter(String checkFile, Folder physicalRoot, MacAlgorithm algorithm, String password) throws FileNotFoundException, CheckWriterWritingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException {
         System.out.println();
-        System.out.print("Writing chech file '" + opt_file + "' ... ");
-        CheckWriter cw = new CheckWriter(new FileOutputStream(new File(opt_file)), physicalRoot, algorithm, opt_password);
+        System.out.print("Writing chech file '" + checkFile + "' ... ");
+        CheckWriter cw = new CheckWriter(new FileOutputStream(new File(checkFile)), physicalRoot, algorithm, password);
         cw.write();
         System.out.println(" DONE ! ");
-        
+
         return cw;
     }
 }

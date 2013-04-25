@@ -1,6 +1,7 @@
 package cui.tree;
 
 /**
+ * Enum to describe state of file
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */

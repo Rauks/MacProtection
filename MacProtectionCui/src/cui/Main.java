@@ -1,8 +1,6 @@
 package cui;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -11,6 +9,8 @@ import java.util.logging.Logger;
 public class Main {
 
     /**
+     * Main function of the program
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class Main {
             System.out.println("Read the documentation (readme) or use `help` command");
             System.out.println();
             try {
-                MacProtectionCui.callFactory("help", new String[] {});
+                MacProtectionCui.callFactory("help", new String[]{});
             } catch (CuiMessageException ex) {
                 System.err.println(ex);
             }

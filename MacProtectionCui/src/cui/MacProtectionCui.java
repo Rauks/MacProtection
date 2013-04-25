@@ -19,11 +19,12 @@ public class MacProtectionCui {
      */
     public static void main(String[] args) {
         new MacProtectionCui();
-
-        // @TODO add interactive console
     }
 
-    MacProtectionCui() {
+    /**
+     * Initialize differents {@link MacProtectionCommand}
+     */
+    public MacProtectionCui() {
         // initialize the commands
         MacProtectionCui.commands.put("show", new cui.command.ShowCommand());
         MacProtectionCui.commands.put("diff", new cui.command.DiffCommand());
@@ -32,6 +33,14 @@ public class MacProtectionCui {
         MacProtectionCui.commands.put("help", new cui.command.HelpCommand());
     }
 
+    /**
+     *
+     * @param string First argument (command name implement
+     * {@link MacProtectionCommand}}
+     * @param args String[] Other arguments
+     * @throws CuiMessageException Catch and transform errors into
+     * {@link CuiMessageException}
+     */
     public static void callFactory(String string, String[] args) throws CuiMessageException {
 
         MacProtectionCui MPC = new MacProtectionCui();
@@ -71,6 +80,13 @@ public class MacProtectionCui {
         }
     }
 
+    /**
+     * Return the {
+     *
+     * @MacProtectionCommand} and his String key
+     *
+     * @return TreeMap<String, MacProtectionCommand> Command
+     */
     public static TreeMap<String, MacProtectionCommand> getCommands() {
         return MacProtectionCui.commands;
     }

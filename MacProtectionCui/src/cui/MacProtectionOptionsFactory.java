@@ -10,6 +10,12 @@ import com.martiansoftware.jsap.JSAPException;
  */
 public class MacProtectionOptionsFactory {
 
+    /**
+     * Password argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void password(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("password")
                 .setStringParser(JSAP.STRING_PARSER)
@@ -20,6 +26,12 @@ public class MacProtectionOptionsFactory {
         jsap.registerParameter(opt);
     }
 
+    /**
+     * Algorithm argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void algorithm(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("algo")
                 .setStringParser(JSAP.STRING_PARSER)
@@ -30,6 +42,12 @@ public class MacProtectionOptionsFactory {
         jsap.registerParameter(opt);
     }
 
+    /**
+     * Source argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void source(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("source")
                 .setStringParser(JSAP.STRING_PARSER)
@@ -41,6 +59,12 @@ public class MacProtectionOptionsFactory {
         jsap.registerParameter(opt);
     }
 
+    /**
+     * CheckFile argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void checkFile(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("check_file")
                 .setStringParser(JSAP.STRING_PARSER)
@@ -51,6 +75,12 @@ public class MacProtectionOptionsFactory {
         jsap.registerParameter(opt);
     }
 
+    /**
+     * SaveFile argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void saveFile(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("file_save")
                 .setStringParser(JSAP.STRING_PARSER)
@@ -61,6 +91,12 @@ public class MacProtectionOptionsFactory {
         jsap.registerParameter(opt);
     }
 
+    /**
+     * Tree argument
+     *
+     * @param jsap {@link JSAP} environment
+     * @throws JSAPException
+     */
     public static void tree(JSAP jsap) throws JSAPException {
         FlaggedOption opt = new FlaggedOption("tree")
                 .setStringParser(JSAP.BOOLEAN_PARSER)

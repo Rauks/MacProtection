@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 /**
+ * Create a Tree of {@link HashedFile} and {@link Folder}
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
@@ -13,10 +14,22 @@ public class DetailedTree {
 
     private final Folder physicalRoot;
 
+    /**
+     * Construct {@link DetailedTree} with a {@link Folder}
+     *
+     * @param physicalRoot Physical root Folder
+     */
     public DetailedTree(Folder physicalRoot) {
         this.physicalRoot = physicalRoot;
     }
 
+    /**
+     * Create a {@link TreeMap} with differences between {@code physicalRoot}
+     * and {@code validationRoot}
+     *
+     * @param validationFolder folder to compare
+     * @return TreeMap<String, FileWithState>
+     */
     public TreeMap<String, FileWithState> create(Folder validationFolder) {
         TreeMap<String, FileWithState> returnTree = new TreeMap<>();
 
@@ -25,7 +38,15 @@ public class DetailedTree {
             FileWithState hashedFileWithFlag = new FileWithState(file, this.hasFile(validationFolder, file));
             returnTree.put(this.printFileRoot(file.getParent()) + file.getName(), hashedFileWithFlag);
         }
-        
+
+        for (Iterator<Folder> it = validationFolder.getAllSubFolders().iterator(); it.hasNext();) {
+            Folder file = it.next();
+            if (this.hasFile(this.physicalRoot, file) == FileState.ADDED) {
+                FileWithState hashedFileWithFlag = new FileWithState(file, FileState.DELETED);
+                returnTree.put(this.printFileRoot(file.getParent()) + file.getName(), hashedFileWithFlag);
+            }
+        }
+
         for (Iterator<HashedFile> it = this.physicalRoot.getAllFiles().iterator(); it.hasNext();) {
             HashedFile file = it.next();
             FileWithState hashedFileWithFlag = new FileWithState(file, this.hasFile(validationFolder, file));
