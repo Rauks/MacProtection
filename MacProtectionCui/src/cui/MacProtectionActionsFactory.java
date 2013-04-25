@@ -4,6 +4,8 @@ import core.MacAlgorithm;
 import core.check.CheckMacException;
 import core.check.CheckReader;
 import core.check.CheckReaderReadingException;
+import core.check.CheckWriter;
+import core.check.CheckWriterWritingException;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
@@ -12,6 +14,7 @@ import core.tree.Folder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -23,7 +26,7 @@ public class MacProtectionActionsFactory {
 
     public static MacProcessor scanDirectory(File dirToScan, MacAlgorithm algorithm, String opt_password, MacProcessor.MacOutput mcOutput) throws MacProcessorException {
         System.out.println();
-        
+
         MacProcessor p = new MacProcessor(dirToScan, algorithm, opt_password, mcOutput);
 
         p.addMacProcessorListener(new MacProcessorListener() {
@@ -61,7 +64,17 @@ public class MacProtectionActionsFactory {
         CheckReader cr = new CheckReader(new FileInputStream(new File(opt_file)), algorithm, opt_password);
         cr.read();
         System.out.println(" DONE !");
-        
+
         return cr;
+    }
+
+    public static CheckWriter checkWriter(String opt_file, Folder physicalRoot, MacAlgorithm algorithm, String opt_password) throws FileNotFoundException, CheckWriterWritingException, CheckMacException, NoSuchAlgorithmException, InvalidKeyException {
+        System.out.println();
+        System.out.print("Writing chech file '" + opt_file + "' ... ");
+        CheckWriter cw = new CheckWriter(new FileOutputStream(new File(opt_file)), physicalRoot, algorithm, opt_password);
+        cw.write();
+        System.out.println(" DONE ! ");
+        
+        return cw;
     }
 }
