@@ -1,6 +1,5 @@
 package cui.command;
 
-import cui.tree.HashedFileWithState;
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -11,20 +10,18 @@ import core.check.CheckMacException;
 import core.check.CheckReader;
 import core.check.CheckReaderReadingException;
 import core.processor.MacProcessor;
-import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
-import core.processor.MacProcessorListener;
 import core.tree.Folder;
 import cui.MacProtectionActionsFactory;
 import cui.tree.DetailedTree;
 import cui.tree.FileState;
+import cui.tree.FileWithState;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 
 /**
  *
@@ -58,12 +55,12 @@ public class DiffCommand implements MacProtectionCommand {
         opt3.setHelp("Checksum file to compare");
         jsap.registerParameter(opt3);
 
-        FlaggedOption opt4 = new FlaggedOption("dirToScan")
+        FlaggedOption opt4 = new FlaggedOption("source")
                 .setStringParser(JSAP.STRING_PARSER)
                 .setRequired(false)
                 .setDefault(".")
-                .setShortFlag('d')
-                .setLongFlag("dirToScan");
+                .setShortFlag('s')
+                .setLongFlag("source");
         opt4.setHelp("Directory to scan");
         jsap.registerParameter(opt4);
 
@@ -76,7 +73,7 @@ public class DiffCommand implements MacProtectionCommand {
     public void process(JSAPResult config) {
 
         try {
-            String opt_dirToScan = config.getString("dirToScan");
+            String opt_dirToScan = config.getString("source");
             String opt_password = config.getString("password");
             String opt_algo = config.getString("algo");
             String opt_file = config.getString("check_file");
@@ -101,16 +98,20 @@ public class DiffCommand implements MacProtectionCommand {
             System.out.println();
             System.out.print("Validation result : ");
             System.out.println(isConformTo);
-            
+
             System.out.println();
             System.out.println("Detailed tree :");
-            
-            DetailedTree detailedTree = new DetailedTree(physicalRoot);
-            for (Iterator<Entry<String, HashedFileWithState>> it = detailedTree.create(validationFolder).entrySet().iterator(); it.hasNext();) {
-                Entry<String, HashedFileWithState> en = it.next();
 
-                if (en.getValue().getState() != FileState.EQUAL) {
-                    System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHash() + " " + en.getKey());
+            DetailedTree detailedTree = new DetailedTree(physicalRoot);
+            for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(validationFolder).entrySet().iterator(); it.hasNext();) {
+                Map.Entry<String, FileWithState> en = it.next();
+                if (en.getValue().getState() == FileState.EQUAL) {
+                    continue;
+                }
+                if (en.getValue().isHashedFile()) {
+                    System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHashedFile().getHash() + " " + en.getKey());
+                } else {
+                    System.out.println(" - " + en.getValue().getState() + " DIRECTORY                        " + en.getKey());
                 }
             }
         } catch (FileNotFoundException | CheckReaderReadingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {

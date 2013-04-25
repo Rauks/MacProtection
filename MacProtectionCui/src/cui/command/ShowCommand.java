@@ -6,17 +6,13 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import core.MacAlgorithm;
 import core.MacAlgorithmException;
-import core.check.CheckReader;
 import core.processor.MacProcessor;
-import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
-import core.processor.MacProcessorListener;
 import core.tree.Folder;
 import cui.MacProtectionActionsFactory;
 import cui.tree.DetailedTree;
-import cui.tree.HashedFileWithState;
+import cui.tree.FileWithState;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -89,11 +85,16 @@ public class ShowCommand implements MacProtectionCommand {
             DetailedTree detailedTree = new DetailedTree(physicalRoot);
 
             //if( physicalRoot.getFile(opt_algo))
-            for (Iterator<Map.Entry<String, HashedFileWithState>> it = detailedTree.create(physicalRoot).entrySet().iterator(); it.hasNext();) {
-                Map.Entry<String, HashedFileWithState> en = it.next();
-                System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHash() + " " + en.getKey());
+            for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(physicalRoot).entrySet().iterator(); it.hasNext();) {
+                Map.Entry<String, FileWithState> en = it.next();
+                if( en.getValue().isHashedFile() ) {
+                    System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHashedFile().getHash() + " " + en.getKey());
+                }
+                else  {
+                    System.out.println(" - " + en.getValue().getState() + " DIRECTORY                        " + en.getKey());
+                }
             }
-        } catch (FileNotFoundException | MacProcessorException | MacAlgorithmException ex) {
+        } catch (MacProcessorException | MacAlgorithmException ex) {
             System.err.println(ex.getMessage());
         }
     }
