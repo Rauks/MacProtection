@@ -99,7 +99,7 @@ public class DiffCommand implements MacProtectionCommand {
             //Physical directory validation
             boolean isConformTo = physicalRoot.isConformTo(validationFolder);
             System.out.println();
-            System.out.print("VALIDATION RESULT : ");
+            System.out.print("Validation result : ");
             System.out.println(isConformTo);
             
             System.out.println();

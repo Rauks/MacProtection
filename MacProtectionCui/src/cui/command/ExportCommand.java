@@ -93,7 +93,7 @@ public class ExportCommand implements MacProtectionCommand {
             //Physical directory validation
             boolean isConformTo = physicalRoot.isConformTo(validationFolder);
             System.out.println();
-            System.out.print("VALIDATION RESULT : ");
+            System.out.print("Validation result : ");
             System.out.println(isConformTo);
         } catch (FileNotFoundException | CheckWriterWritingException | CheckReaderReadingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {
             System.err.println(ex.getMessage());
