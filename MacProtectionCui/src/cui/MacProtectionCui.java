@@ -30,6 +30,7 @@ public class MacProtectionCui {
         MacProtectionCui.commands.put("show", new cui.command.ShowCommand());
         MacProtectionCui.commands.put("diff", new cui.command.DiffCommand());
         MacProtectionCui.commands.put("export", new cui.command.ExportCommand());
+        MacProtectionCui.commands.put("algos", new cui.command.AlgosCommand());
         MacProtectionCui.commands.put("help", new cui.command.HelpCommand());
     }
 
