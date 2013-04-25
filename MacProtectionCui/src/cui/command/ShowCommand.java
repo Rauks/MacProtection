@@ -29,7 +29,6 @@ public class ShowCommand implements MacProtectionCommand {
         MacProtectionOptionsFactory.password(jsap);
         MacProtectionOptionsFactory.algorithm(jsap);
         MacProtectionOptionsFactory.source(jsap);
-        MacProtectionOptionsFactory.tree(jsap);
 
         return jsap;
     }

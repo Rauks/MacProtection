@@ -1,6 +1,5 @@
 package cui.command;
 
-import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
@@ -38,6 +37,7 @@ public class DiffCommand implements MacProtectionCommand {
         MacProtectionOptionsFactory.algorithm(jsap);
         MacProtectionOptionsFactory.checkFile(jsap);
         MacProtectionOptionsFactory.source(jsap);
+        MacProtectionOptionsFactory.tree(jsap);
 
         //-no-checksum
 
@@ -52,6 +52,7 @@ public class DiffCommand implements MacProtectionCommand {
             String opt_password = config.getString("password");
             String opt_algo = config.getString("algo");
             String opt_check_file = config.getString("check_file");
+            boolean opt_tree = config.getBoolean("tree");
 
             File dirToScan = new File(opt_source);
             MacAlgorithm algorithm;
@@ -77,16 +78,19 @@ public class DiffCommand implements MacProtectionCommand {
             System.out.println();
             System.out.println("Detailed tree :");
 
-            DetailedTree detailedTree = new DetailedTree(physicalRoot);
-            for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(validationFolder).entrySet().iterator(); it.hasNext();) {
-                Map.Entry<String, FileWithState> en = it.next();
-                if (en.getValue().getState() == FileState.EQUAL) {
-                    continue;
-                }
-                if (en.getValue().isHashedFile()) {
-                    System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHashedFile().getHash() + " " + en.getKey());
-                } else {
-                    System.out.println(" - " + en.getValue().getState() + " DIRECTORY                        " + en.getKey());
+            // Show or not the DetailedTree
+            if (opt_tree) {
+                DetailedTree detailedTree = new DetailedTree(physicalRoot);
+                for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(validationFolder).entrySet().iterator(); it.hasNext();) {
+                    Map.Entry<String, FileWithState> en = it.next();
+                    if (en.getValue().getState() == FileState.EQUAL) {
+                        continue;
+                    }
+                    if (en.getValue().isHashedFile()) {
+                        System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHashedFile().getHash() + " " + en.getKey());
+                    } else {
+                        System.out.println(" - " + en.getValue().getState() + " DIRECTORY                        " + en.getKey());
+                    }
                 }
             }
         } catch (FileNotFoundException | CheckReaderReadingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {
