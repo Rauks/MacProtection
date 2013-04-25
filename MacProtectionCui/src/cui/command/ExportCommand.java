@@ -9,22 +9,15 @@ import core.MacAlgorithmException;
 import core.check.CheckMacException;
 import core.check.CheckReader;
 import core.check.CheckReaderReadingException;
-import core.check.CheckWriter;
 import core.check.CheckWriterWritingException;
 import core.processor.MacProcessor;
-import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
-import core.processor.MacProcessorListener;
 import core.tree.Folder;
+import cui.MacProtectionActionsFactory;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import usecase.MacProtection;
 
 /**
  *
@@ -58,12 +51,12 @@ public class ExportCommand implements MacProtectionCommand {
         opt3.setHelp("File to save");
         jsap.registerParameter(opt3);
 
-        FlaggedOption opt4 = new FlaggedOption("dirToScan")
+        FlaggedOption opt4 = new FlaggedOption("source")
                 .setStringParser(JSAP.STRING_PARSER)
                 .setRequired(false)
                 .setDefault(".")
-                .setShortFlag('d')
-                .setLongFlag("dirToScan");
+                .setShortFlag('s')
+                .setLongFlag("source");
         opt4.setHelp("Directory to scan");
         jsap.registerParameter(opt4);
 
@@ -73,65 +66,35 @@ public class ExportCommand implements MacProtectionCommand {
     @Override
     public void process(JSAPResult config) {
 
-        String opt_dirToScan = config.getString("dirToScan");
-        String opt_password = config.getString("password");
-        String opt_algo = config.getString("algo");
-        String opt_file = config.getString("file");
-
-        File dirToScan = new File(opt_dirToScan);
-        MacAlgorithm algorithm;
-
         try {
+            String opt_dirToScan = config.getString("source");
+            String opt_password = config.getString("password");
+            String opt_algo = config.getString("algo");
+            String opt_file = config.getString("file");
+
+            File dirToScan = new File(opt_dirToScan);
+            MacAlgorithm algorithm;
+
             algorithm = new MacAlgorithm(opt_algo);
 
+            System.out.println("Scan '" + dirToScan + "' directory");
+
             //Processing a physical repertory
-            MacProcessor p = new MacProcessor(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
-
-            p.addMacProcessorListener(new MacProcessorListener() {
-                private int state_process = 0;
-                private boolean introIsPrinted;
-
-                @Override
-                public void macProcessorPerformed(MacProcessorEvent evt) {
-                    float state = evt.getProcessedFiles() / (float) evt.getTotalFiles() * 100;
-
-                    if (!this.introIsPrinted) {
-                        System.out.println("Numbers of files : " + evt.getTotalFiles());
-                        System.out.print("\tProgres : ");
-                        this.introIsPrinted = true;
-                    }
-
-                    if (Math.floor(state / 2) > this.state_process) {
-                        System.out.print("|");
-                        this.state_process = (int) Math.floor(state / 2);
-                    }
-
-                    //System.out.println(evt.getProcessedFiles() + "/" + (float) evt.getTotalFiles() + " - " + state + " - " + state/10);
-                }
-            });
-            p.process();
+            MacProcessor p = MacProtectionActionsFactory.scanDirectory(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
             Folder physicalRoot = p.getResult();
 
-            System.out.println();
-
             //Creation of check file for the folder
-            System.out.print("WRITING CHECK FILE '" + opt_file + "' ... ");
-            CheckWriter cw = new CheckWriter(new FileOutputStream(new File(opt_file)), physicalRoot, algorithm, opt_password);
-            cw.write();
-            System.out.println(" DONE ! ");
+            MacProtectionActionsFactory.checkWriter(opt_file, physicalRoot, algorithm, opt_password);
 
             //Get a folder tree from the validation file
-            Folder validationFolder = null;
-            System.out.print("READING CHECK FILE ... ");
-            CheckReader cr = new CheckReader(new FileInputStream(new File(opt_file)), algorithm, opt_password);
-            cr.read();
-            validationFolder = cr.getRootFolder();
-            System.out.println(" DONE !");
+            CheckReader cr = MacProtectionActionsFactory.checkReader(opt_file, algorithm, opt_password);
+            Folder validationFolder = cr.getRootFolder();
 
             //Physical directory validation
+            boolean isConformTo = physicalRoot.isConformTo(validationFolder);
+            System.out.println();
             System.out.print("VALIDATION RESULT : ");
-            System.out.println(physicalRoot.isConformTo(validationFolder));
-
+            System.out.println(isConformTo);
         } catch (FileNotFoundException | CheckWriterWritingException | CheckReaderReadingException | CheckMacException | NoSuchAlgorithmException | InvalidKeyException ex) {
             System.err.println(ex.getMessage());
         } catch (MacProcessorException | MacAlgorithmException ex) {
