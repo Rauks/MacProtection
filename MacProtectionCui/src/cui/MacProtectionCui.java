@@ -25,7 +25,6 @@ public class MacProtectionCui {
 
     MacProtectionCui() {
         // initialize the commands
-        MacProtectionCui.commands.put("init", new cui.command.InitCommand());
         MacProtectionCui.commands.put("ls", new cui.command.LsCommand());
         MacProtectionCui.commands.put("show", new cui.command.ShowCommand());
         MacProtectionCui.commands.put("diff", new cui.command.DiffCommand());
