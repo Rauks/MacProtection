@@ -15,6 +15,7 @@ import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
 import core.processor.MacProcessorListener;
 import core.tree.Folder;
+import cui.MacProtectionActionsFactory;
 import cui.tree.DetailedTree;
 import cui.tree.FileState;
 import java.io.File;
@@ -74,65 +75,41 @@ public class DiffCommand implements MacProtectionCommand {
     @Override
     public void process(JSAPResult config) {
 
-        String opt_dirToScan = config.getString("dirToScan");
-        String opt_password = config.getString("password");
-        String opt_algo = config.getString("algo");
-        String opt_file = config.getString("check");
-
-        File dirToScan = new File(opt_dirToScan);
-        MacAlgorithm algorithm;
-
         try {
+            String opt_dirToScan = config.getString("dirToScan");
+            String opt_password = config.getString("password");
+            String opt_algo = config.getString("algo");
+            String opt_file = config.getString("check_file");
+
+            File dirToScan = new File(opt_dirToScan);
+            MacAlgorithm algorithm;
+
             algorithm = new MacAlgorithm(opt_algo);
 
             System.out.println("Scan '" + dirToScan + "' directory");
 
             //Processing a physical repertory
-            MacProcessor p = new MacProcessor(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
-
-            p.addMacProcessorListener(new MacProcessorListener() {
-                private int state_process = 0;
-                private boolean introIsPrinted;
-
-                @Override
-                public void macProcessorPerformed(MacProcessorEvent evt) {
-                    float state = evt.getProcessedFiles() / (float) evt.getTotalFiles() * 100;
-
-                    if (!this.introIsPrinted) {
-                        System.out.println("Numbers of files : " + evt.getTotalFiles());
-                        System.out.print("\tProgres : ");
-                        this.introIsPrinted = true;
-                    }
-
-                    if (Math.floor(state / 2) > this.state_process) {
-                        System.out.print("|");
-                        this.state_process = (int) Math.floor(state / 2);
-                    }
-                }
-            });
-            p.process();
+            MacProcessor p = MacProtectionActionsFactory.scanDirectory(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
             Folder physicalRoot = p.getResult();
-            
-            System.out.println();
-            System.out.println("Compare with check file '" + opt_file + "' ... ");
-            
+
             //Get a folder tree from the validation file
-            Folder validationFolder = null;
-            System.out.print(" reading ... ");
-            CheckReader cr = new CheckReader(new FileInputStream(new File(opt_file)), algorithm, opt_password);
-            cr.read();
-            validationFolder = cr.getRootFolder();
-            System.out.println(" DONE !");
+            CheckReader cr = MacProtectionActionsFactory.checkReader(opt_file, algorithm, opt_password);
+            Folder validationFolder = cr.getRootFolder();
 
             //Physical directory validation
             boolean isConformTo = physicalRoot.isConformTo(validationFolder);
+            System.out.println();
             System.out.print("VALIDATION RESULT : ");
             System.out.println(isConformTo);
+            
+            System.out.println();
+            System.out.println("Detailed tree :");
+            
             DetailedTree detailedTree = new DetailedTree(physicalRoot);
             for (Iterator<Entry<String, HashedFileWithState>> it = detailedTree.create(validationFolder).entrySet().iterator(); it.hasNext();) {
                 Entry<String, HashedFileWithState> en = it.next();
-                
-                if( en.getValue().getState() != FileState.EQUAL ) {
+
+                if (en.getValue().getState() != FileState.EQUAL) {
                     System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHash() + " " + en.getKey());
                 }
             }
