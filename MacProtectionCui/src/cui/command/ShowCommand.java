@@ -6,14 +6,17 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import core.MacAlgorithm;
 import core.MacAlgorithmException;
+import core.check.CheckReader;
 import core.processor.MacProcessor;
 import core.processor.MacProcessorEvent;
 import core.processor.MacProcessorException;
 import core.processor.MacProcessorListener;
 import core.tree.Folder;
+import cui.MacProtectionActionsFactory;
 import cui.tree.DetailedTree;
 import cui.tree.HashedFileWithState;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -41,12 +44,12 @@ public class ShowCommand implements MacProtectionCommand {
                 .setLongFlag(JSAP.NO_LONGFLAG);
         jsap.registerParameter(opt2);
 
-        FlaggedOption opt3 = new FlaggedOption("fileOrDir")
+        FlaggedOption opt3 = new FlaggedOption("source")
                 .setStringParser(JSAP.STRING_PARSER)
                 .setRequired(false)
                 .setDefault(".")
-                .setShortFlag('f')
-                .setLongFlag(JSAP.NO_LONGFLAG);
+                .setShortFlag('s')
+                .setLongFlag("source");
         jsap.registerParameter(opt3);
 
         FlaggedOption opt4 = new FlaggedOption("tree")
@@ -65,55 +68,32 @@ public class ShowCommand implements MacProtectionCommand {
 
     @Override
     public void process(JSAPResult config) {
-        String opt_password = config.getString("password");
-        String opt_algo = config.getString("algo");
-        String opt_dirToScan = config.getString("fileOrDir");
-
-        File dirToScan = new File(opt_dirToScan);
-        MacAlgorithm algorithm;
-
         try {
+            String opt_password = config.getString("password");
+            String opt_algo = config.getString("algo");
+            String opt_dirToScan = config.getString("source");
+
+            File dirToScan = new File(opt_dirToScan);
+            MacAlgorithm algorithm;
+
             algorithm = new MacAlgorithm(opt_algo);
 
             System.out.println("Scan '" + dirToScan + "' directory");
 
             //Processing a physical repertory
-            MacProcessor p = new MacProcessor(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
-
-            p.addMacProcessorListener(new MacProcessorListener() {
-                private int state_process = 0;
-                private boolean introIsPrinted;
-
-                @Override
-                public void macProcessorPerformed(MacProcessorEvent evt) {
-                    float state = evt.getProcessedFiles() / (float) evt.getTotalFiles() * 100;
-
-                    if (!this.introIsPrinted) {
-                        System.out.println("Numbers of files : " + evt.getTotalFiles());
-                        System.out.print("\tProgres : ");
-                        this.introIsPrinted = true;
-                    }
-
-                    if (Math.floor(state / 2) > this.state_process) {
-                        System.out.print("|");
-                        this.state_process = (int) Math.floor(state / 2);
-                    }
-                }
-            });
-            p.process();
+            MacProcessor p = MacProtectionActionsFactory.scanDirectory(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
             Folder physicalRoot = p.getResult();
-            
-            System.out.println();
 
-            //Physical directory validation
-            DetailedTree detailedTree = new DetailedTree(physicalRoot);
+            System.out.println();
             
+            DetailedTree detailedTree = new DetailedTree(physicalRoot);
+
             //if( physicalRoot.getFile(opt_algo))
             for (Iterator<Map.Entry<String, HashedFileWithState>> it = detailedTree.create(physicalRoot).entrySet().iterator(); it.hasNext();) {
                 Map.Entry<String, HashedFileWithState> en = it.next();
                 System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHash() + " " + en.getKey());
             }
-        } catch (MacProcessorException | MacAlgorithmException ex) {
+        } catch (FileNotFoundException | MacProcessorException | MacAlgorithmException ex) {
             System.err.println(ex.getMessage());
         }
     }
