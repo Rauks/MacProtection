@@ -1,6 +1,5 @@
 package cui.command;
 
-import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
@@ -10,6 +9,7 @@ import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import cui.MacProtectionActionsFactory;
+import cui.MacProtectionOptionsFactory;
 import cui.tree.DetailedTree;
 import cui.tree.FileWithState;
 import java.io.File;
@@ -26,38 +26,10 @@ public class ShowCommand implements MacProtectionCommand {
     public JSAP initCall() throws JSAPException {
         JSAP jsap = new JSAP();
 
-        FlaggedOption opt1 = new FlaggedOption("password")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
-                .setShortFlag('p')
-                .setLongFlag(JSAP.NO_LONGFLAG);
-        jsap.registerParameter(opt1);
-
-        FlaggedOption opt2 = new FlaggedOption("algo")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
-                .setShortFlag('a')
-                .setLongFlag(JSAP.NO_LONGFLAG);
-        jsap.registerParameter(opt2);
-
-        FlaggedOption opt3 = new FlaggedOption("source")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(false)
-                .setDefault(".")
-                .setShortFlag('s')
-                .setLongFlag("source");
-        jsap.registerParameter(opt3);
-
-        FlaggedOption opt4 = new FlaggedOption("tree")
-                .setStringParser(JSAP.BOOLEAN_PARSER)
-                .setRequired(false)
-                .setDefault("true")
-                .setShortFlag('t')
-                .setLongFlag(JSAP.NO_LONGFLAG);
-        opt4.setHelp("List recursively all files and folders");
-        jsap.registerParameter(opt4);
-
-        //-no-checksum
+        MacProtectionOptionsFactory.password(jsap);
+        MacProtectionOptionsFactory.algorithm(jsap);
+        MacProtectionOptionsFactory.source(jsap);
+        MacProtectionOptionsFactory.tree(jsap);
 
         return jsap;
     }
@@ -81,15 +53,14 @@ public class ShowCommand implements MacProtectionCommand {
             Folder physicalRoot = p.getResult();
 
             System.out.println();
-            
+
             DetailedTree detailedTree = new DetailedTree(physicalRoot);
 
             for (Iterator<Map.Entry<String, FileWithState>> it = detailedTree.create(physicalRoot).entrySet().iterator(); it.hasNext();) {
                 Map.Entry<String, FileWithState> en = it.next();
-                if( en.getValue().isHashedFile() ) {
+                if (en.getValue().isHashedFile()) {
                     System.out.println(" - " + en.getValue().getState() + " " + en.getValue().getHashedFile().getHash() + " " + en.getKey());
-                }
-                else  {
+                } else {
                     System.out.println(" - " + en.getValue().getState() + " DIRECTORY                        " + en.getKey());
                 }
             }

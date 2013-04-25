@@ -13,6 +13,7 @@ import core.processor.MacProcessor;
 import core.processor.MacProcessorException;
 import core.tree.Folder;
 import cui.MacProtectionActionsFactory;
+import cui.MacProtectionOptionsFactory;
 import cui.tree.DetailedTree;
 import cui.tree.FileState;
 import cui.tree.FileWithState;
@@ -32,37 +33,11 @@ public class DiffCommand implements MacProtectionCommand {
     @Override
     public JSAP initCall() throws JSAPException {
         JSAP jsap = new JSAP();
-
-        FlaggedOption opt1 = new FlaggedOption("password")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
-                .setShortFlag('p')
-                .setLongFlag(JSAP.NO_LONGFLAG);
-        jsap.registerParameter(opt1);
-
-        FlaggedOption opt2 = new FlaggedOption("algo")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
-                .setShortFlag('a')
-                .setLongFlag(JSAP.NO_LONGFLAG);
-        jsap.registerParameter(opt2);
-
-        FlaggedOption opt3 = new FlaggedOption("check_file")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
-                .setShortFlag('c')
-                .setLongFlag("check");
-        opt3.setHelp("Checksum file to compare");
-        jsap.registerParameter(opt3);
-
-        FlaggedOption opt4 = new FlaggedOption("source")
-                .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(false)
-                .setDefault(".")
-                .setShortFlag('s')
-                .setLongFlag("source");
-        opt4.setHelp("Directory to scan");
-        jsap.registerParameter(opt4);
+        
+        MacProtectionOptionsFactory.password(jsap);
+        MacProtectionOptionsFactory.algorithm(jsap);
+        MacProtectionOptionsFactory.checkFile(jsap);
+        MacProtectionOptionsFactory.source(jsap);
 
         //-no-checksum
 
