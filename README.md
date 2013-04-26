@@ -32,7 +32,7 @@ Example :
 
 
 ### Second : cryo
-Usable within a _bash_ executable, see package `src.examples` for it.
+Usable within a _bash_ executable, see package `cui.examples` for it.
 
 Example :
 
