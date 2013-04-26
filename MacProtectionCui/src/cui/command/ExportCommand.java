@@ -44,7 +44,7 @@ public class ExportCommand implements MacProtectionCommand {
             String opt_dirToScan = config.getString("source");
             String opt_password = config.getString("password");
             String opt_algo = config.getString("algo");
-            String opt_file = config.getString("file");
+            String opt_file = config.getString("file_save");
 
             File dirToScan = new File(opt_dirToScan);
             MacAlgorithm algorithm;
