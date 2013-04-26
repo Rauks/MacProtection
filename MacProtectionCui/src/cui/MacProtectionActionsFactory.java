@@ -41,7 +41,6 @@ public class MacProtectionActionsFactory {
         MacProcessor p = new MacProcessor(dirToScan, algorithm, password, mcOutput);
 
         p.addMacProcessorListener(new MacProcessorListener() {
-            private int state_process = 0;
             private boolean introIsPrinted;
 
             @Override
@@ -50,14 +49,11 @@ public class MacProtectionActionsFactory {
 
                 if (!this.introIsPrinted) {
                     System.out.println("Numbers of files : " + evt.getTotalFiles());
-                    System.out.print("\tScan progres : ");
+                    System.out.print("\tScan progres :   0%");
                     this.introIsPrinted = true;
                 }
 
-                if (Math.floor(state / 2) > this.state_process) {
-                    System.out.print("|");
-                    this.state_process = (int) Math.floor(state / 2);
-                }
+                System.out.print("\b\b\b\b" + String.format("%3d", (int) state) + "%");
             }
         });
         p.process();

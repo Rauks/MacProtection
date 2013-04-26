@@ -103,7 +103,7 @@ public class MacProtectionOptionsFactory {
                 .setRequired(false)
                 .setDefault("true")
                 .setShortFlag('t')
-                .setLongFlag(JSAP.NO_LONGFLAG);
+                .setLongFlag("tree");
         opt.setHelp("List recursively all files and folders");
         jsap.registerParameter(opt);
     }
