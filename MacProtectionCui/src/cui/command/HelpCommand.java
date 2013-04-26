@@ -10,7 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * "help" command.
+ * <p/>
+ * Get help on a specific <command> or list all commands
+ * It's also the default command
+ * 
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
 public class HelpCommand implements MacProtectionCommand {
@@ -32,6 +36,7 @@ public class HelpCommand implements MacProtectionCommand {
         String opt_command = config.getString("command");
 
         if (opt_command != null && !opt_command.isEmpty()) {
+            // Specific command <help <command>>
 
             System.out.println("Help about '" + opt_command + "'");
             System.out.println();
@@ -39,21 +44,23 @@ public class HelpCommand implements MacProtectionCommand {
             MacProtectionCommand entry = MacProtectionCui.getCommands().get(opt_command);
             try {
                 JSAP jsap = entry.initCall();
-                
+
                 System.out.println("  NAME");
                 System.out.println("\t" + opt_command + " - " + entry.getDescription());
                 System.out.println();
-                
+
                 System.out.println("  SYNOPSIS");
                 System.out.println("\t" + jsap.getUsage());
                 System.out.println();
-                
+
                 System.out.println("  OPTIONS");
-                System.out.println(implode("\n\t", jsap.getHelp().split("\n"), true));
+                System.out.println(this.implode("\n\t", jsap.getHelp().split("\n"), true));
             } catch (JSAPException ex) {
                 System.err.println(ex);
             }
         } else {
+            // General command <help>
+
             for (Map.Entry<String, MacProtectionCommand> entry : MacProtectionCui.getCommands().entrySet()) {
                 try {
                     JSAP jsap = entry.getValue().initCall();
@@ -71,6 +78,14 @@ public class HelpCommand implements MacProtectionCommand {
         }
     }
 
+    /**
+     * Implode a String[] with delimiter
+     *
+     * @param delim String Delimiter
+     * @param args String[] Datas to implode
+     * @param first Apply delimiter at first element
+     * @return String
+     */
     public static String implode(String delim, String[] args, boolean first) {
         StringBuilder sb = new StringBuilder();
 

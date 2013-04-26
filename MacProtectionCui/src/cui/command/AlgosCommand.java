@@ -6,6 +6,9 @@ import com.martiansoftware.jsap.JSAPResult;
 import core.MacAlgorithm;
 
 /**
+ * "algos" command.
+ * <p/>
+ * Return a list of all available algorithms
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */

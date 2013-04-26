@@ -5,7 +5,9 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 
 /**
- *
+ * Arguments Factory fot JSAP
+ * 
+ * @see JSAP
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
 public class MacProtectionOptionsFactory {

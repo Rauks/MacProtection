@@ -81,9 +81,7 @@ public class MacProtectionCui {
     }
 
     /**
-     * Return the {
-     *
-     * @MacProtectionCommand} and his String key
+     * Return the {@link MacProtectionCommand} and his String key
      *
      * @return TreeMap<String, MacProtectionCommand> Command
      */

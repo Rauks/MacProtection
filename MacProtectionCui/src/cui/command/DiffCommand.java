@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * "diff" command.
+ * <p/>
+ * Show changes between source directory and checkfile
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
@@ -38,8 +41,6 @@ public class DiffCommand implements MacProtectionCommand {
         MacProtectionOptionsFactory.checkFile(jsap);
         MacProtectionOptionsFactory.source(jsap);
         MacProtectionOptionsFactory.tree(jsap);
-
-        //-no-checksum
 
         return jsap;
     }
@@ -61,15 +62,15 @@ public class DiffCommand implements MacProtectionCommand {
 
             System.out.println("Scan '" + dirToScan + "' directory");
 
-            //Processing a physical repertory
+            // Processing a physical repertory
             MacProcessor p = MacProtectionActionsFactory.scanDirectory(dirToScan, algorithm, opt_password, MacProcessor.MacOutput.HEXADECIMAL);
             Folder physicalRoot = p.getResult();
 
-            //Get a folder tree from the validation file
+            // Get a folder tree from the validation file
             CheckReader cr = MacProtectionActionsFactory.checkReader(opt_check_file, algorithm, opt_password);
             Folder validationFolder = cr.getRootFolder();
 
-            //Physical directory validation
+            // Physical directory validation
             boolean isConformTo = physicalRoot.isConformTo(validationFolder);
             System.out.println();
             System.out.print("Validation result : ");

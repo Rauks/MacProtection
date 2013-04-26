@@ -20,6 +20,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * "export" command.
+ * <p/>
+ * Export checkfile of source folder
  *
  * @author Georges OLIVARES <dev@olivares-georges.fr>
  */
@@ -75,7 +78,7 @@ public class ExportCommand implements MacProtectionCommand {
             System.err.println(ex.getMessage());
         }
     }
-    
+
     @Override
     public String getDescription() {
         return "Export checkfile of source folder";
